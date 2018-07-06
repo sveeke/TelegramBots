@@ -16,9 +16,9 @@
 #############################################################################
 
 # Variables
-KEY=''
-URL="https://api.telegram.org/bot$KEY/sendMessage"
-TARGET=''
+TOKEN='ACCESS_TOKEN_HERE'
+URL="https://api.telegram.org/bot$TOKEN/sendMessage"
+TARGET='CHAT_ID_HERE'
 
 # List with available updates to variable $UPDATES
 UPDATES="$(aptitude -F "%p" search '~U')"
