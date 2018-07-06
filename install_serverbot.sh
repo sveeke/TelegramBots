@@ -117,8 +117,8 @@ sed -i s/'CHAT_ID_HERE'/"$ID"/g /usr/local/bin/serverbot.sh
 echo "4. Making sure the script runs daily..."
 
 cat << EOF > /etc/cron.d/serverbot
-# This cronjob activates the serverbot daily at 4:00.
-0 4 * * * root serverbot.sh
+# This cronjob activates the serverbot daily at 8:00.
+0 8 * * * root /usr/local/bin/serverbot.sh
 EOF
 
 # Final notice

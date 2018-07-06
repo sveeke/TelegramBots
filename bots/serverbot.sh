@@ -9,7 +9,7 @@
 # NonCommercial-ShareAlike 4.0 International License.
 #
 # See https://creativecommons.org/licenses/by-nc-sa/4.0/
-# 
+#
 # Contact:
 # > e-mail      mail@sebasveeke.nl
 # > GitHub      sveeke
