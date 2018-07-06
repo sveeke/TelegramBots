@@ -105,7 +105,7 @@ wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/bots/server
 # Give execute privileges to the bot script
 echo "2. Setting permissions for bot..."
 
-chmod +x /usr/local/bin/serverbot.sh
+chmod 700 /usr/local/bin/serverbot.sh
 
 # Add access token and chat ID
 echo "3. Adding access token and chat ID to bot..."
