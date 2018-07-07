@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.1.0-ALPHA (06-07-2018)
+# Version 0.1.1-ALPHA (07-07-2018)
 #############################################################################
 
 #############################################################################
@@ -16,41 +16,73 @@
 #############################################################################
 
 #############################################################################
+# TELEGRAM VARIABLES
+#############################################################################
+
+# During normal installation, only one pair of token and chat ID will be
+# asked and used. If you want to use multiple Telegram Bots for the
+# different roles, add the tokens and chat IDs in the below variables. 
+# Please note that you have to set them all for it to work.
+
+# TelegramMetricsBot
+TOKEN_METRICS_BOT='token'
+CHAT_ID_METRICS_BOT='id'
+
+# TelegramUpdateBot
+TOKEN_UPDATE_BOT='token'
+CHAT_ID_UPDATE_BOT='id'
+
+#############################################################################
+# INTRODUCTION
+#############################################################################
+
+echo
+echo
+echo
+echo '         _______   _                                ____        _       '
+echo '        |__   __| | |     Created by S. Veeke      |  _ \      | |      '
+echo '           | | ___| | ___  __ _ _ __ __ _ _ __ ___ | |_) | ___ | |_ ___ '
+echo '           | |/ _ \ |/ _ \/ _` | `__/ _` | `_ ` _ \|  _ < / _ \| __/ __|'
+echo '           | |  __/ |  __/ (_| | | | (_| | | | | | | |_) | (_) | |_\__ \'
+echo '           |_|\___|_|\___|\__, |_|  \__,_|_| |_| |_|____/ \___/ \__|___/'
+echo '                           __/ |                                        '
+echo '                          |___/                                         '
+echo
+echo '         This script will install TelegramBots on your server. You need'
+echo '         the access token and chat ID during the installation.'
+echo
+echo '         Press ctrl + c during the installation to abort.'
+
+sleep 3
+
+#############################################################################
 # CHECKING REQUIREMENTS
 #############################################################################
 
 echo
-echo "This script will install ServerBot on your machine. You need the"
-echo "access token and chat ID during the installation."
 echo
-echo "Press ctrl + c during the installation to abort."
-
-sleep 3
-
-echo
-echo
-echo "CHECKING REQUIREMENTS"
+echo "*** CHECKING REQUIREMENTS ***"
 
 # Checking whether the script runs as root
-echo -n "Script is running as root..."
+echo -n "[1/12] Script is running as root..."
     if [ "$EUID" -ne 0 ]; then
-        echo -e "\\t\\t\\t\\t\\t[NO]"
+        echo -e "\\t\\t\\t\\t[NO]"
         echo
-        echo "************************************************************************"
-	    echo "This script should be run as root. Use su root and run the script again."
-	    echo "************************************************************************"
+        echo "**********************************"
+	    echo "This script should be run as root."
+	    echo "**********************************"
         echo
 	    exit
     fi
-echo -e "\\t\\t\\t\\t\\t[YES]"
+echo -e "\\t\\t\\t\\t[YES]"
 
-# Checking Debian version
-echo -n "Running Debian..."
+# Checking whether Debian is installed
+echo -n "[2/12] Running Debian..."
     if [ -f /etc/debian_version ]; then
-        echo -e "\\t\\t\\t\\t\\t\\t[YES]"
+        echo -e "\\t\\t\\t\\t\\t[YES]"
 
-        else
-            echo -e "\\t\\t\\t\\t\\t\\t[NO]"
+    else
+            echo -e "\\t\\t\\t\\t\\t[NO]"
             echo
             echo "*************************************"
             echo "This script will only work on Debian."
@@ -60,12 +92,13 @@ echo -n "Running Debian..."
     fi
 
 # Checking internet connection
-echo -n "Connected to the internet..."
+echo -n "[3/12] Connected to the internet..."
 wget -q --tries=10 --timeout=20 --spider www.google.com
     if [[ $? -eq 0 ]]; then
-        echo -e "\\t\\t\\t\\t\\t[YES]"
+        echo -e "\\t\\t\\t\\t[YES]"
+
     else
-        echo -e "\\t\\t\\t\\t\\t[NO]"
+        echo -e "\\t\\t\\t\\t[NO]"
         echo
         echo "***********************************"
         echo "Access to the internet is required."
@@ -75,61 +108,119 @@ wget -q --tries=10 --timeout=20 --spider www.google.com
     fi
 
 #############################################################################
+# UPDATE OPERATING SYSTEM
+#############################################################################
+
+echo
+echo
+
+# Update the package list from the Debian repositories
+echo "*** UPDATING OPERATING SYSTEM ***"
+echo "[4/12] Downloading package list from repositories..."
+apt-get -qq update
+
+# Upgrade operating system with new package list
+echo "[5/12] Downloading and upgrading packages..."
+apt-get -y -qq upgrade
+
+sleep 1
+
+#############################################################################
+# INSTALL NEW SOFTWARE
+#############################################################################
+
+# The following packages are needed for the bots to work.
+# - curl                          Sends the bot content to the API
+# - aptitude                      Provides the upgradable package list
+
+echo
+echo "*** INSTALLING DEPENDENCIES ***"
+echo "[6/12] Installing curl and aptitude..."
+apt-get -y -qq install curl aptitude
+
+#############################################################################
 # USER INPUT
 #############################################################################
 
 echo
-echo
-echo "USER INPUT"
+echo "*** TELEGRAM VARIABLES ***"
 
-# Bot access token
-read -r -p "Enter bot access token: " TOKEN
+# Check whether the variables at the beginning of the script were used
+if [ "$TOKEN_METRICS_BOT" != "token" ] && \
+[ "$CHAT_ID_METRICS_BOT" != "id" ] && \
+[ "$TOKEN_UPDATE_BOT" != "token" ] && \
+[ "$CHAT_ID_UPDATE_BOT" != "id" ]; then
 
-# Chat ID
-read -r -p "Enter chat id:          " ID
+    echo "[7/12] Using provided access tokens..."
+    echo "[8/12] Using providet chat IDs"
+
+else
+
+    # Bot access token
+    read -r -p "[7/12] Enter bot access token: " TOKEN
+
+    # Chat ID
+    read -r -p "[8/12] Enter chat id:          " ID
+
+    # Use provided token and chat ID in corresponding variables
+    TOKEN_METRICS_BOT="${TOKEN}"
+    CHAT_ID_METRICS_BOT="${ID}"
+    TOKEN_UPDATE_BOT="${TOKEN}"
+    CHAT_ID_UPDATE_BOT="${ID}"
+fi
 
 
 #############################################################################
-# BOT INSTALLATION
+# BOTS INSTALLATION
 #############################################################################
 
 echo
-echo
-echo "INSTALLATION"
+echo "*** INSTALLING BOTS ***"
 
-# Download and save the bot script to /usr/local/bin
-echo "1. Downloading and saving the bot..."
+# Download and save the bot scripts to /usr/local/bin
+echo "[9/12] Downloading and saving the bots..."
+wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/bots/TelegramMetricsBot.sh -O /usr/local/bin/TelegramMetricsBot.sh
+wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/bots/TelegramUpdateBot.sh -O /usr/local/bin/TelegramUpdateBot.sh
 
-wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/bots/serverbot.sh -O /usr/local/bin/serverbot.sh
+# Give execute privileges to the bot scripts
+echo "[10/12] Setting permissions for bots..."
+chmod 700 /usr/local/bin/TelegramMetricsBot.sh
+chmod 700 /usr/local/bin/TelegramUpdateBot.sh
 
-# Give execute privileges to the bot script
-echo "2. Setting permissions for bot..."
+# Add access tokens and chat IDs
+echo "[11/12] Adding access token and chat ID to bots..."
+sed -i s/'ACCESS_TOKEN_HERE'/"$TOKEN_METRICS_BOT"/g /usr/local/bin/TelegramMetricsBot.sh
+sed -i s/'CHAT_ID_HERE'/"$CHAT_ID_METRICS_BOT"/g /usr/local/bin/TelegramMetricsBot.sh
+sed -i s/'ACCESS_TOKEN_HERE'/"$TOKEN_UPDATE_BOT"/g /usr/local/bin/TelegramUpdateBot.sh
+sed -i s/'CHAT_ID_HERE'/"$CHAT_ID_UPDATE_BOT"/g /usr/local/bin/TelegramUpdateBot.sh
 
-chmod 700 /usr/local/bin/serverbot.sh
+# Create cronjobs in /etc/cron.d
+echo "[12/12] Making sure the script runs daily..."
+cat << EOF > /etc/cron.d/TelegramMetricsBot
+# This cronjob activates the TelegramMetricBot daily at 8:00.
+0 8 * * * root /usr/local/bin/TelegramMetricsBot.sh
+EOF
 
-# Add access token and chat ID
-echo "3. Adding access token and chat ID to bot..."
-
-sed -i s/'ACCESS_TOKEN_HERE'/"$TOKEN"/g /usr/local/bin/serverbot.sh
-sed -i s/'CHAT_ID_HERE'/"$ID"/g /usr/local/bin/serverbot.sh
-
-# Create cronjob in /etc/cron.d
-echo "4. Making sure the script runs daily..."
-
-cat << EOF > /etc/cron.d/serverbot
-# This cronjob activates the serverbot daily at 8:00.
-0 8 * * * root /usr/local/bin/serverbot.sh
+cat << EOF > /etc/cron.d/TelegramUpdateBot
+# This cronjob activates the TelegramUpdateBot three times during the day.
+0 8,15,22 * * * root /usr/local/bin/TelegramUpdateBot.sh
 EOF
 
 # Final notice
 echo
 echo
-echo "The installation has been completed. You will now receive daily"
-echo "updates with some server metrics. If you want to edit some"
-echo "settings, please look at these locations:"
+echo "The installation has been completed!"
+echo "You will now receive daily updates with some server metrics."
+echo "If you want to edit some settings, please look at these locations:"
 echo
-echo "/etc/cron.d/serverbot"
-echo "/usr/local/bin/serverbot.sh"
+echo "    /etc/cron.d/TelegramMetricsBot"
+echo "    /etc/cron.d/TelegramUpdateBot"
+echo "    /etc/cron.d/TelegramLoginBot"
+echo "    /usr/local/bin/TelegramMetricsBot.sh"
+echo "    /usr/local/bin/TelegramUpdateBot.sh"
+echo "    /usr/local/bin/TelegramLoginBot.sh"
+echo
+echo "To test, just enter the name of the bot in the CLI and press enter."
 echo
 echo "Good luck!"
 echo
