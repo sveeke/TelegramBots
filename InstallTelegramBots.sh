@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.4.1-ALPHA (08-07-2018)
+# Version 0.4.2-ALPHA (08-07-2018)
 #############################################################################
 
 #############################################################################
@@ -72,7 +72,7 @@ echo
 echo "*** CHECKING REQUIREMENTS ***"
 
 # Checking whether the script runs as root
-echo -n "[1/15] Script is running as root..."
+echo -n "[1/14] Script is running as root..."
 if [ "$EUID" -ne 0 ]; then
     echo -e "\\t\\t\\t\\t[NO]"
     echo
@@ -85,7 +85,7 @@ fi
 echo -e "\\t\\t\\t\\t[YES]"
 
 # Checking whether Debian is installed
-echo -n "[2/15] Running Debian..."
+echo -n "[2/14] Running Debian..."
 if [ -f /etc/debian_version ]; then
     echo -e "\\t\\t\\t\\t\\t[YES]"
 
@@ -100,7 +100,7 @@ else
 fi
 
 # Checking internet connection
-echo -n "[3/15] Connected to the internet..."
+echo -n "[3/14] Connected to the internet..."
 wget -q --tries=10 --timeout=20 --spider www.google.com
 if [[ $? -eq 0 ]]; then
     echo -e "\\t\\t\\t\\t[YES]"
@@ -122,11 +122,11 @@ fi
 # Update the package list from the Debian repositories
 echo
 echo "*** UPDATING OPERATING SYSTEM ***"
-echo "[4/15] Downloading package list from repositories..."
+echo "[4/14] Downloading package list from repositories..."
 apt-get -qq update
 
 # Upgrade operating system with new package list
-echo "[5/15] Downloading and upgrading packages..."
+echo "[5/14] Downloading and upgrading packages..."
 apt-get -y -qq upgrade
 
 sleep 1
@@ -141,7 +141,7 @@ sleep 1
 
 echo
 echo "*** INSTALLING DEPENDENCIES ***"
-echo "[6/15] Installing curl and aptitude..."
+echo "[6/14] Installing curl and aptitude..."
 apt-get -y -qq install curl aptitude
 
 #############################################################################
@@ -152,13 +152,13 @@ echo
 echo "*** INSTALLING BOTS & SCRIPTS ***"
 
 # Download and save the bot scripts to /usr/local/bin
-echo "[7/15] Downloading and saving the bots and scripts..."
+echo "[7/14] Downloading and saving the bots and scripts..."
 wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramMetricsBot.sh -O /usr/local/bin/TelegramMetricsBot
 wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramUpdateBot.sh -O /usr/local/bin/TelegramUpdateBot
 wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramCronUpdate.sh -O /usr/local/bin/TelegramCronUpdate
 
 # Give execute privileges to the bots and scripts
-echo "[8/15] Setting permissions for bots..."
+echo "[8/14] Setting permissions for bots..."
 chmod 700 /usr/local/bin/TelegramMetricsBot
 chmod 700 /usr/local/bin/TelegramUpdateBot
 #chmod 700 /usr/local/bin/TelegramLoginBot
@@ -174,7 +174,7 @@ echo "*** CONFIGURATION ***"
 
 # Check whether TelegramBots.conf exists and act accordingly
 if [ ! -f /etc/TelegramBots/TelegramBots.conf ]; then
-    echo "[9/15] No existing configuration found, creating new one..."
+    echo "[9/14] No existing configuration found, creating new one..."
 
     # Check whether the variables at the beginning of the script were used
     if [ "$Token_TelegramMetricsBot" != "token" ] && \
@@ -186,15 +186,15 @@ if [ ! -f /etc/TelegramBots/TelegramBots.conf ]; then
     [ "$Token_TelegramOutageBot" != "token" ] && \
     [ "$Chat_TelegramOutageBot" != "id" ]; then
 
-        echo "[10/15] Using provided access tokens..."
-        echo "[11/15] Using provided chat IDs"
+        echo "[10/14] Using provided access tokens..."
+        echo "[11/14] Using provided chat IDs"
 
     else
         # Bot authentication token
-        read -r -p "[10/15] Enter bot token: " ProvidedToken
+        read -r -p "[10/14] Enter bot token: " ProvidedToken
 
         # Telegram chat ID
-        read -r -p "[11/15] Enter chat ID:   " ProvidedChatID
+        read -r -p "[11/14] Enter chat ID:   " ProvidedChatID
 
         # Use provided token and chat ID in corresponding variables
         Token_TelegramMetricsBot="${ProvidedToken}"
@@ -207,14 +207,14 @@ if [ ! -f /etc/TelegramBots/TelegramBots.conf ]; then
         Chat_TelegramOutageBot="${ProvidedChatID}"
     fi
     # Add TelegramBots configuration file to /etc/TelegramBots
-    echo "[12/15] Adding configuration file to system..."
+    echo "[12/14] Adding configuration file to system..."
     mkdir /etc/TelegramBots
     chmod 755 /etc/TelegramBots
     wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramBots.conf -O /etc/TelegramBots/TelegramBots.conf
     chmod 750 /etc/TelegramBots/TelegramBots.conf
     
     # Add access tokens and chat IDs
-    echo "[13/15] Adding access token and chat ID to bots..."
+    echo "[13/14] Adding access token and chat ID to bots..."
     sed -i s/'metrics_token_here'/"$Token_TelegramMetricsBot"/g /etc/TelegramBots/TelegramBots.conf
     sed -i s/'metrics_id_here'/"$Chat_TelegramMetricsBot"/g /etc/TelegramBots/TelegramBots.conf
     sed -i s/'update_token_here'/"$Token_TelegramUpdateBot"/g /etc/TelegramBots/TelegramBots.conf
@@ -225,7 +225,7 @@ if [ ! -f /etc/TelegramBots/TelegramBots.conf ]; then
     sed -i s/'outage_id_here'/"$Chat_TelegramOutageBot"/g /etc/TelegramBots/TelegramBots.conf
 
     # Create cronjobs in /etc/cron.d
-    echo "[15/15] Adding cronjobs for bots..."
+    echo "[14/14] Adding cronjobs for bots..."
 
     # Cronjob for TelegramMetricsBot
 cat <<- EOF > /etc/cron.d/TelegramMetricsBot
@@ -250,11 +250,12 @@ systemctl restart cron
 
 else
     # Notify user that all configuration steps will be skipped
-    echo "[9/15] Existing configuration found, skipping creation..."
-    echo "[10/15] Skipping gathering tokens..."
-    echo "[11/15] Skipping gathering chat IDs..."
-    echo "[12/15] Skipping adding configuration file..."
-    echo "[13/15] Skipping adding tokens and IDs to configuration..."
+    echo "[9/14] Existing configuration found, skipping creation..."
+    echo "[10/14] Skipping gathering tokens..."
+    echo "[11/14] Skipping gathering chat IDs..."
+    echo "[12/14] Skipping adding configuration file..."
+    echo "[13/14] Skipping adding tokens and IDs to configuration..."
+    echo "[14/14] Skipping adding cronjobs to system..."
 fi
 
 #############################################################################
