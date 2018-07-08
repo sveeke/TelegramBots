@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.1.2-ALPHA (07-07-2018)
+# Version 0.2.0-ALPHA (08-07-2018)
 #############################################################################
 
 #############################################################################
@@ -15,10 +15,8 @@
 # > GitHub      sveeke
 #############################################################################
 
-# Variables
-TOKEN='ACCESS_TOKEN_HERE'
-URL="https://api.telegram.org/bot$TOKEN/sendMessage"
-TARGET='CHAT_ID_HERE'
+# Source TelegramBots.conf
+. /etc/TelegramBots/TelegramBots.conf
 
 # Update repository
 apt-get -qq update

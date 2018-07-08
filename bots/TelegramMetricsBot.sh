@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.1.2-ALPHA (07-07-2018)
+# Version 0.3.0-ALPHA (08-07-2018)
 #############################################################################
 
 #############################################################################
@@ -15,10 +15,8 @@
 # > GitHub      sveeke
 #############################################################################
 
-# Variables
-TOKEN='ACCESS_TOKEN_HERE'
-URL="https://api.telegram.org/bot$TOKEN/sendMessage"
-TARGET='CHAT_ID_HERE'
+# Source TelegramBots.conf
+. /etc/TelegramBots/TelegramBots.conf
 
 # Output metrics to variable $TEXT_METRICS
 read -r -d "" TEXT_METRICS << EOM
@@ -27,7 +25,7 @@ read -r -d "" TEXT_METRICS << EOM
 
 *LOAD:* $(uptime | grep -oP '(?<=average:).*')
 *RAM:* $(awk '/^Mem/ {print $3}' <(free -m -h)) / $(awk '/^Mem/ {print $2}' <(free -m -h))
-*HDD:* $(df -h --output=used -x tmpfs -x devtmpfs | tr -dc '1234567890GMT.') / $(df -h --output=size -x tmpfs -x devtmpfs | tr -dc '1234567890GMT.') ($(df --output=pcent -x tmpfs -x devtmpfs | tr -dc '0-9')%)
+*HDD:* $(df -h / --output=used -x tmpfs -x devtmpfs | tr -dc '1234567890GMT.') / $(df -h / --output=size -x tmpfs -x devtmpfs | tr -dc '1234567890GMT.') ($(df / --output=pcent -x tmpfs -x devtmpfs | tr -dc '0-9')%)
 EOM
 
 # Create metrics payload to sent to Telegram API
