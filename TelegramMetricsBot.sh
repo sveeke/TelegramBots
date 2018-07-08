@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.3.0-ALPHA (08-07-2018)
+# Version 0.3.1-ALPHA (08-07-2018)
 #############################################################################
 
 #############################################################################
@@ -19,7 +19,7 @@
 . /etc/TelegramBots/TelegramBots.conf
 
 # Output metrics to variable $TEXT_METRICS
-read -r -d "" TEXT_METRICS << EOM
+read -r -d "" Message_Metrics << EOM
 *HOST:* $(uname -n)
 *UPTIME:* $(uptime -p)
 
@@ -29,7 +29,7 @@ read -r -d "" TEXT_METRICS << EOM
 EOM
 
 # Create metrics payload to sent to Telegram API
-PAYLOAD_METRICS="chat_id=$TARGET&text=$TEXT_METRICS&parse_mode=Markdown&disable_web_page_preview=true"
+Payload_Metrics="chat_id=$Token_TelegramMetricsBot&text=$Message_Metrics&parse_mode=Markdown&disable_web_page_preview=true"
 
 # Sent metrics payload to Telegram API
-curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "$PAYLOAD_METRICS" $URL > /dev/null 2>&1 &
+curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "$Payload_Metrics" $Url_TelegramMetricsBot > /dev/null 2>&1 &
