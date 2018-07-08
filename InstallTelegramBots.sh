@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.4.0-ALPHA (08-07-2018)
+# Version 0.4.1-ALPHA (08-07-2018)
 #############################################################################
 
 #############################################################################
@@ -119,10 +119,8 @@ fi
 # UPDATE OPERATING SYSTEM
 #############################################################################
 
-echo
-echo
-
 # Update the package list from the Debian repositories
+echo
 echo "*** UPDATING OPERATING SYSTEM ***"
 echo "[4/15] Downloading package list from repositories..."
 apt-get -qq update
@@ -151,19 +149,21 @@ apt-get -y -qq install curl aptitude
 #############################################################################
 
 echo
-echo "*** INSTALLING BOTS ***"
+echo "*** INSTALLING BOTS & SCRIPTS ***"
 
 # Download and save the bot scripts to /usr/local/bin
-echo "[7/15] Downloading and saving the bots..."
-wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramMetricsBot.sh -O /usr/local/bin/TelegramMetricsBot.sh
-wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramUpdateBot.sh -O /usr/local/bin/TelegramUpdateBot.sh
+echo "[7/15] Downloading and saving the bots and scripts..."
+wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramMetricsBot.sh -O /usr/local/bin/TelegramMetricsBot
+wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramUpdateBot.sh -O /usr/local/bin/TelegramUpdateBot
+wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramCronUpdate.sh -O /usr/local/bin/TelegramCronUpdate
 
-# Give execute privileges to the bot scripts
+# Give execute privileges to the bots and scripts
 echo "[8/15] Setting permissions for bots..."
-chmod 700 /usr/local/bin/TelegramMetricsBot.sh
-chmod 700 /usr/local/bin/TelegramUpdateBot.sh
-#chmod 700 /usr/local/bin/TelegramLoginBot.sh
-#chmod 700 /usr/local/bin/TelegramOutageBot.sh
+chmod 700 /usr/local/bin/TelegramMetricsBot
+chmod 700 /usr/local/bin/TelegramUpdateBot
+#chmod 700 /usr/local/bin/TelegramLoginBot
+#chmod 700 /usr/local/bin/TelegramOutageBot
+chmod 700 /usr/local/bin/TelegramCronUpdate
 
 #############################################################################
 # CONFIGURATION
@@ -224,34 +224,16 @@ if [ ! -f /etc/TelegramBots/TelegramBots.conf ]; then
     sed -i s/'outage_token_here'/"$Token_TelegramOutageBot"/g /etc/TelegramBots/TelegramBots.conf
     sed -i s/'outage_id_here'/"$Chat_TelegramOutageBot"/g /etc/TelegramBots/TelegramBots.conf
 
-else
-    # Notify user that all configuration steps will be skipped
-    echo "[9/15] Existing configuration found, skipping creation..."
-    echo "[10/15] Skipping gathering tokens..."
-    echo "[11/15] Skipping gathering chat IDs..."
-    echo "[12/15] Skipping adding configuration file..."
-    echo "[13/15] Skipping adding tokens and IDs to configuration..."
-fi
+    # Create cronjobs in /etc/cron.d
+    echo "[15/15] Adding cronjobs for bots..."
 
-#############################################################################
-# CRONJOBS
-#############################################################################
-
-# Add UpdateCron.sh to /etc/TelegramBots/
-echo "[14/15] Adding UpdateCron.sh to system..."
-wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/UpdateCron.sh -O /etc/TelegramBots/UpdateCron.sh
-chmod 750 /etc/TelegramBots/UpdateCron.sh
-
-# Create cronjobs in /etc/cron.d
-echo "[15/15] Adding cronjobs for bots..."
-
-# Cronjob for TelegramMetricsBot
-cat << EOF > /etc/cron.d/TelegramMetricsBot
+    # Cronjob for TelegramMetricsBot
+cat <<- EOF > /etc/cron.d/TelegramMetricsBot
 # This cronjob activates the TelegramMetricsBot daily at 8:00.
 0 8 * * * root /usr/local/bin/TelegramMetricsBot.sh
 EOF
 
-# Cronjob for TelegramUpdateBot
+    # Cronjob for TelegramUpdateBot
 cat << EOF > /etc/cron.d/TelegramUpdateBot
 # This cronjob activates the TelegramUpdateBot three times during the day.
 0 8,15,22 * * * root /usr/local/bin/TelegramUpdateBot.sh
@@ -266,27 +248,28 @@ EOF
 # Restart cron service
 systemctl restart cron
 
+else
+    # Notify user that all configuration steps will be skipped
+    echo "[9/15] Existing configuration found, skipping creation..."
+    echo "[10/15] Skipping gathering tokens..."
+    echo "[11/15] Skipping gathering chat IDs..."
+    echo "[12/15] Skipping adding configuration file..."
+    echo "[13/15] Skipping adding tokens and IDs to configuration..."
+fi
+
 #############################################################################
 # NOTICE
 #############################################################################
 
-# Final notice
 echo
 echo
-echo "The installation has been completed!"
-echo "You will now receive daily updates with some server metrics."
-echo "If you want to edit some settings, please look at these locations:"
+echo '*** The installation has been completed! ***'
 echo
-echo "    /etc/cron.d/TelegramMetricsBot"
-echo "    /etc/cron.d/TelegramUpdateBot"
-echo "    /etc/cron.d/TelegramLoginBot"
-echo "    /usr/local/bin/TelegramMetricsBot.sh"
-echo "    /usr/local/bin/TelegramUpdateBot.sh"
-echo "    /usr/local/bin/TelegramLoginBot.sh"
+echo 'Some tips:'
+echo '+ Just type "Telegram" and autocomplete (double tab) the bot you want to test.'
+echo '+ You can change the default settings in /etc/TelegramBots/TelegramBots.conf.'
 echo
-echo "To test, just enter the name of the bot in the CLI and press enter."
-echo
-echo "Good luck!"
+echo 'Good luck!'
 echo
 echo
 exit

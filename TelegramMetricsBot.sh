@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.3.1-ALPHA (08-07-2018)
+# Version 0.3.2-ALPHA (08-07-2018)
 #############################################################################
 
 #############################################################################
@@ -29,7 +29,7 @@ read -r -d "" Message_Metrics << EOM
 EOM
 
 # Create metrics payload to sent to Telegram API
-Payload_Metrics="chat_id=$Token_TelegramMetricsBot&text=$Message_Metrics&parse_mode=Markdown&disable_web_page_preview=true"
+Payload_Metrics="chat_id=$Chat_TelegramMetricsBot&text=$Message_Metrics&parse_mode=Markdown&disable_web_page_preview=true"
 
 # Sent metrics payload to Telegram API
 curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "$Payload_Metrics" $Url_TelegramMetricsBot > /dev/null 2>&1 &
