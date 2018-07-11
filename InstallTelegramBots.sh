@@ -25,18 +25,22 @@
 # Please note that you have to set them *all* eight for them to work.
 
 # TelegramMetricsBot
+Install_TelegramMetricsBot='yes'
 Token_TelegramMetricsBot='token'
 Chat_TelegramMetricsBot='id'
 
 # TelegramUpdateBot
+Install_TelegramUpdateBot='yes'
 Token_TelegramUpdateBot='token'
 Chat_TelegramUpdateBot='id'
 
 # TelegramLoginBot
+Install_TelegramLoginBot='yes'
 Token_TelegramLoginBot='token'
 Chat_TelegramLoginBot='id'
 
 # TelegramOutageBot
+Install_TelegramOutageBot='yes'
 Token_TelegramOutageBot='token'
 Chat_TelegramOutageBot='id'
 
