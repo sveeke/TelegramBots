@@ -49,6 +49,7 @@ case $1 in
 
     --version)
         echo
+        echo "TelegramMetricsBot $TelegramMetricsBotVersion"
         echo "Copyright (C) 2018 S. Veeke."
         echo
         echo "License CC Attribution-NonCommercial-ShareAlike 4.0 Int."

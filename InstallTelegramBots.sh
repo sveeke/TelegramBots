@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.4.2-ALPHA (08-07-2018)
+# Version 0.5.0-ALPHA (14-07-2018)
 #############################################################################
 
 #############################################################################
@@ -22,25 +22,33 @@
 # During normal installation, only one pair of token and chat ID will be
 # asked and used. If you want to use multiple Telegram Bots for the
 # different roles, add the tokens and chat IDs in the below variables.
-# Please note that you have to set them *all* eight for them to work.
+# Please note that you have to set them *all* for them to work.
+
+# TelegramBots
+TelegramBotsAutoUpdate='no' # Default 'no'
 
 # TelegramMetricsBot
-Install_TelegramMetricsBot='yes'
+TelegramMetricsBot='yes' # Default 'yes'
 Token_TelegramMetricsBot='token'
 Chat_TelegramMetricsBot='id'
 
 # TelegramUpdateBot
-Install_TelegramUpdateBot='yes'
+TelegramUpdateBot='yes' # Default 'yes'
 Token_TelegramUpdateBot='token'
 Chat_TelegramUpdateBot='id'
 
 # TelegramLoginBot
-Install_TelegramLoginBot='yes'
+TelegramLoginBot='no' # Default 'yes'
 Token_TelegramLoginBot='token'
 Chat_TelegramLoginBot='id'
 
+# TelegramAlertBot
+TelegramAlertBot='no' # Default 'yes'
+Token_TelegramAlertBot='token'
+Chat_TelegramAlertBot='id'
+
 # TelegramOutageBot
-Install_TelegramOutageBot='yes'
+TelegramOutageBot='no' # Default 'no'
 Token_TelegramOutageBot='token'
 Chat_TelegramOutageBot='id'
 
@@ -149,27 +157,6 @@ echo "[6/14] Installing curl and aptitude..."
 apt-get -y -qq install curl aptitude
 
 #############################################################################
-# BOTS INSTALLATION
-#############################################################################
-
-echo
-echo "*** INSTALLING BOTS & SCRIPTS ***"
-
-# Download and save the bot scripts to /usr/local/bin
-echo "[7/14] Downloading and saving the bots and scripts..."
-wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramMetricsBot.sh -O /usr/local/bin/TelegramMetricsBot
-wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramUpdateBot.sh -O /usr/local/bin/TelegramUpdateBot
-wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramCronUpdate.sh -O /usr/local/bin/TelegramCronUpdate
-
-# Give execute privileges to the bots and scripts
-echo "[8/14] Setting permissions for bots..."
-chmod 700 /usr/local/bin/TelegramMetricsBot
-chmod 700 /usr/local/bin/TelegramUpdateBot
-#chmod 700 /usr/local/bin/TelegramLoginBot
-#chmod 700 /usr/local/bin/TelegramOutageBot
-chmod 700 /usr/local/bin/TelegramCronUpdate
-
-#############################################################################
 # CONFIGURATION
 #############################################################################
 
@@ -180,6 +167,22 @@ echo "*** CONFIGURATION ***"
 if [ ! -f /etc/TelegramBots/TelegramBots.conf ]; then
     echo "[9/14] No existing configuration found, creating new one..."
 
+#    # Create array with all install variables (work in progress)
+#    declare -a ArrayInstallBots=(
+#        '$TelegramMetricsBot'
+#        '$TelegramUpdateBot'
+#        '$TelegramLoginBot'
+#        '$TelegramAlertBot'
+#        '$TelegramOutageBot'
+#        )
+
+#    # Check if all tokens and id's are filled in for all bots that get installed
+#    for i in "${ArrayInstallBots[@]}" do
+#        if [ "$i" -eq "yes" ]; then
+#            if [ "$Token_$i"]
+#            echo "$i"
+#    done
+
     # Check whether the variables at the beginning of the script were used
     if [ "$Token_TelegramMetricsBot" != "token" ] && \
     [ "$Chat_TelegramMetricsBot" != "id" ] && \
@@ -187,6 +190,8 @@ if [ ! -f /etc/TelegramBots/TelegramBots.conf ]; then
     [ "$Chat_TelegramUpdateBot" != "id" ] && \
     [ "$Token_TelegramLoginBot" != "token" ] && \
     [ "$Chat_TelegramLoginBot" != "id" ] && \
+    [ "$Token_TelegramAlertBot" != "token" ] && \
+    [ "$Chat_TelegramAlertBot" != "id" ] && \
     [ "$Token_TelegramOutageBot" != "token" ] && \
     [ "$Chat_TelegramOutageBot" != "id" ]; then
 
@@ -207,50 +212,35 @@ if [ ! -f /etc/TelegramBots/TelegramBots.conf ]; then
         Chat_TelegramUpdateBot="${ProvidedChatID}"
         Token_TelegramLoginBot="${ProvidedToken}"
         Chat_TelegramLoginBot="${ProvidedChatID}"
+        Token_TelegramAlertBot="${ProvidedToken}"
+        Chat_TelegramAlertBot="${ProvidedChatID}"
         Token_TelegramOutageBot="${ProvidedToken}"
         Chat_TelegramOutageBot="${ProvidedChatID}"
     fi
-    # Add TelegramBots configuration file to /etc/TelegramBots
+
+    # Add TelegramBots configuration file to /etc/TelegramBots/
     echo "[12/14] Adding configuration file to system..."
-    mkdir /etc/TelegramBots
-    chmod 755 /etc/TelegramBots
+    mkdir -m 755 /etc/TelegramBots
     wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramBots.conf -O /etc/TelegramBots/TelegramBots.conf
     chmod 750 /etc/TelegramBots/TelegramBots.conf
     
     # Add access tokens and chat IDs
     echo "[13/14] Adding access token and chat ID to bots..."
+    sed -i s/'metrics_install_here'/"$Install_TelegramMetricsBot"/g /etc/TelegramBots/TelegramBots.conf
     sed -i s/'metrics_token_here'/"$Token_TelegramMetricsBot"/g /etc/TelegramBots/TelegramBots.conf
     sed -i s/'metrics_id_here'/"$Chat_TelegramMetricsBot"/g /etc/TelegramBots/TelegramBots.conf
+    sed -i s/'update_install_here'/"$Install_TelegramUpdateBot"/g /etc/TelegramBots/TelegramBots.conf
     sed -i s/'update_token_here'/"$Token_TelegramUpdateBot"/g /etc/TelegramBots/TelegramBots.conf
     sed -i s/'update_id_here'/"$Chat_TelegramUpdateBot"/g /etc/TelegramBots/TelegramBots.conf
+    sed -i s/'login_install_here'/"$Install_TelegramLoginBot"/g /etc/TelegramBots/TelegramBots.conf
     sed -i s/'login_token_here'/"$Token_TelegramLoginBot"/g /etc/TelegramBots/TelegramBots.conf
     sed -i s/'login_id_here'/"$Chat_TelegramLoginBot"/g /etc/TelegramBots/TelegramBots.conf
+    sed -i s/'alert_install_here'/"$Install_TelegramAlertBot"/g /etc/TelegramBots/TelegramBots.conf
+    sed -i s/'alert_token_here'/"$Token_TelegramAlertBot"/g /etc/TelegramBots/TelegramBots.conf
+    sed -i s/'alert_id_here'/"$Chat_TelegramAlertBot"/g /etc/TelegramBots/TelegramBots.conf
+    sed -i s/'outage_install_here'/"$Install_TelegramOutageBot"/g /etc/TelegramBots/TelegramBots.conf
     sed -i s/'outage_token_here'/"$Token_TelegramOutageBot"/g /etc/TelegramBots/TelegramBots.conf
     sed -i s/'outage_id_here'/"$Chat_TelegramOutageBot"/g /etc/TelegramBots/TelegramBots.conf
-
-    # Create cronjobs in /etc/cron.d
-    echo "[14/14] Adding cronjobs for bots..."
-
-    # Cronjob for TelegramMetricsBot
-cat <<- EOF > /etc/cron.d/TelegramMetricsBot
-# This cronjob activates the TelegramMetricsBot daily at 8:00.
-0 8 * * * root /usr/local/bin/TelegramMetricsBot.sh
-EOF
-
-    # Cronjob for TelegramUpdateBot
-cat << EOF > /etc/cron.d/TelegramUpdateBot
-# This cronjob activates the TelegramUpdateBot three times during the day.
-0 8,15,22 * * * root /usr/local/bin/TelegramUpdateBot.sh
-EOF
-
-# Cronjob for TelegramLoginBot
-# Will be added later!
-
-# Cronjob for TelegramOutagebot
-# Will be added later!
-
-# Restart cron service
-systemctl restart cron
 
 else
     # Notify user that all configuration steps will be skipped
@@ -260,6 +250,56 @@ else
     echo "[12/14] Skipping adding configuration file..."
     echo "[13/14] Skipping adding tokens and IDs to configuration..."
     echo "[14/14] Skipping adding cronjobs to system..."
+fi
+
+#############################################################################
+# BOTS INSTALLATION OR UPDATE
+#############################################################################
+
+# Source TelegramBots.conf
+. /etc/TelegramBots/TelegramBots.conf
+
+echo
+echo "*** INSTALLING BOTS & SCRIPTS ***"
+
+# Install newest version of TelegramBotsGenerateConfig always
+echo "Installing TelegramBotsGenerateConfig"
+wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramBotsGenerateConfig.sh -O /usr/local/bin/TelegramBotsGenerateConfig
+chmod 700 /usr/local/bin/TelegramBotsGenerateConfig
+
+# Install TelegramMetricsBot when enabled
+if [ "$Install_TelegramMetricsBot" = 'yes' ]; then
+    echo "Installing TelegramMetricsBot"
+    wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramMetricsBot.sh -O /usr/local/bin/TelegramMetricsBot
+    chmod 700 /usr/local/bin/TelegramMetricsBot
+fi
+
+# Install TelegramUpdateBot when enabled
+if [ "$Install_TelegramUpdateBot" = 'yes' ]; then
+    echo "Installing TelegramUpdateBot"
+    wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramUpdateBot.sh -O /usr/local/bin/TelegramUpdateBot
+    chmod 700 /usr/local/bin/TelegramUpdateBot
+fi
+
+# Install TelegramLoginBot when enabled
+if [ "$Install_TelegramLoginBot" = 'yes' ]; then
+    echo "Installing TelegramLoginBot"
+    wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramLoginBot.sh -O /usr/local/bin/TelegramLoginBot
+    chmod 700 /usr/local/bin/TelegramLoginBot
+fi
+
+# Install TelegramAlertBot when enabled
+if [ "$Install_TelegramAlertBot" = 'yes' ]; then
+    echo "Installing TelegramAlertBot"
+    wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramAlertBot.sh -O /usr/local/bin/TelegramAlertBot
+    chmod 700 /usr/local/bin/TelegramAlertBot
+fi
+
+# Install TelegramOutageBot when enabled
+if [ "$Install_TelegramOutageBot" = 'yes' ]; then
+    echo "Installing TelegramOutageBot"
+    wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramOutageBot.sh -O /usr/local/bin/TelegramOutageBot
+    chmod 700 /usr/local/bin/TelegramOutageBot
 fi
 
 #############################################################################
