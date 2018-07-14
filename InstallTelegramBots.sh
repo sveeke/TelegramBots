@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.5.0-ALPHA (14-07-2018)
+# Version 0.6.1-ALPHA (14-07-2018)
 #############################################################################
 
 #############################################################################
@@ -28,27 +28,27 @@
 TelegramBotsAutoUpdate='no' # Default 'no'
 
 # TelegramMetricsBot
-TelegramMetricsBot='yes' # Default 'yes'
+Install_TelegramMetricsBot='yes' # Default 'yes'
 Token_TelegramMetricsBot='token'
 Chat_TelegramMetricsBot='id'
 
 # TelegramUpdateBot
-TelegramUpdateBot='yes' # Default 'yes'
+Install_TelegramUpdateBot='yes' # Default 'yes'
 Token_TelegramUpdateBot='token'
 Chat_TelegramUpdateBot='id'
 
 # TelegramLoginBot
-TelegramLoginBot='no' # Default 'yes'
+Install_TelegramLoginBot='no' # Default 'yes'
 Token_TelegramLoginBot='token'
 Chat_TelegramLoginBot='id'
 
 # TelegramAlertBot
-TelegramAlertBot='no' # Default 'yes'
+Install_TelegramAlertBot='no' # Default 'yes'
 Token_TelegramAlertBot='token'
 Chat_TelegramAlertBot='id'
 
 # TelegramOutageBot
-TelegramOutageBot='no' # Default 'no'
+Install_TelegramOutageBot='no' # Default 'no'
 Token_TelegramOutageBot='token'
 Chat_TelegramOutageBot='id'
 
@@ -84,7 +84,7 @@ echo
 echo "*** CHECKING REQUIREMENTS ***"
 
 # Checking whether the script runs as root
-echo -n "[1/14] Script is running as root..."
+echo -n "[1/3] Script is running as root..."
 if [ "$EUID" -ne 0 ]; then
     echo -e "\\t\\t\\t\\t[NO]"
     echo
@@ -97,7 +97,7 @@ fi
 echo -e "\\t\\t\\t\\t[YES]"
 
 # Checking whether Debian is installed
-echo -n "[2/14] Running Debian..."
+echo -n "[2/3] Running Debian..."
 if [ -f /etc/debian_version ]; then
     echo -e "\\t\\t\\t\\t\\t[YES]"
 
@@ -112,7 +112,7 @@ else
 fi
 
 # Checking internet connection
-echo -n "[3/14] Connected to the internet..."
+echo -n "[3/3] Connected to the internet..."
 wget -q --tries=10 --timeout=20 --spider www.google.com
 if [[ $? -eq 0 ]]; then
     echo -e "\\t\\t\\t\\t[YES]"
@@ -134,11 +134,11 @@ fi
 # Update the package list from the Debian repositories
 echo
 echo "*** UPDATING OPERATING SYSTEM ***"
-echo "[4/14] Downloading package list from repositories..."
+echo "[+] Downloading package list from repositories..."
 apt-get -qq update
 
 # Upgrade operating system with new package list
-echo "[5/14] Downloading and upgrading packages..."
+echo "[+] Downloading and upgrading packages..."
 apt-get -y -qq upgrade
 
 sleep 1
@@ -153,7 +153,7 @@ sleep 1
 
 echo
 echo "*** INSTALLING DEPENDENCIES ***"
-echo "[6/14] Installing curl and aptitude..."
+echo "[+] Installing curl and aptitude..."
 apt-get -y -qq install curl aptitude
 
 #############################################################################
@@ -165,7 +165,7 @@ echo "*** CONFIGURATION ***"
 
 # Check whether TelegramBots.conf exists and act accordingly
 if [ ! -f /etc/TelegramBots/TelegramBots.conf ]; then
-    echo "[9/14] No existing configuration found, creating new one..."
+    echo "[+] No existing configuration found, creating new one..."
 
 #    # Create array with all install variables (work in progress)
 #    declare -a ArrayInstallBots=(
@@ -195,15 +195,15 @@ if [ ! -f /etc/TelegramBots/TelegramBots.conf ]; then
     [ "$Token_TelegramOutageBot" != "token" ] && \
     [ "$Chat_TelegramOutageBot" != "id" ]; then
 
-        echo "[10/14] Using provided access tokens..."
-        echo "[11/14] Using provided chat IDs"
+        echo "[+] Using provided access tokens..."
+        echo "[+] Using provided chat IDs"
 
     else
         # Bot authentication token
-        read -r -p "[10/14] Enter bot token: " ProvidedToken
+        read -r -p "[?] Enter bot token: " ProvidedToken
 
         # Telegram chat ID
-        read -r -p "[11/14] Enter chat ID:   " ProvidedChatID
+        read -r -p "[?] Enter chat ID:   " ProvidedChatID
 
         # Use provided token and chat ID in corresponding variables
         Token_TelegramMetricsBot="${ProvidedToken}"
@@ -219,13 +219,14 @@ if [ ! -f /etc/TelegramBots/TelegramBots.conf ]; then
     fi
 
     # Add TelegramBots configuration file to /etc/TelegramBots/
-    echo "[12/14] Adding configuration file to system..."
+    echo "[+] Adding configuration file to system..."
     mkdir -m 755 /etc/TelegramBots
     wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramBots.conf -O /etc/TelegramBots/TelegramBots.conf
     chmod 750 /etc/TelegramBots/TelegramBots.conf
     
     # Add access tokens and chat IDs
-    echo "[13/14] Adding access token and chat ID to bots..."
+    echo "[+] Adding access token and chat ID to bots..."
+    sed -i s/'auto_update_here'/"$TelegramBotsAutoUpdate"/g /etc/TelegramBots/TelegramBots.conf
     sed -i s/'metrics_install_here'/"$Install_TelegramMetricsBot"/g /etc/TelegramBots/TelegramBots.conf
     sed -i s/'metrics_token_here'/"$Token_TelegramMetricsBot"/g /etc/TelegramBots/TelegramBots.conf
     sed -i s/'metrics_id_here'/"$Chat_TelegramMetricsBot"/g /etc/TelegramBots/TelegramBots.conf
@@ -244,12 +245,12 @@ if [ ! -f /etc/TelegramBots/TelegramBots.conf ]; then
 
 else
     # Notify user that all configuration steps will be skipped
-    echo "[9/14] Existing configuration found, skipping creation..."
-    echo "[10/14] Skipping gathering tokens..."
-    echo "[11/14] Skipping gathering chat IDs..."
-    echo "[12/14] Skipping adding configuration file..."
-    echo "[13/14] Skipping adding tokens and IDs to configuration..."
-    echo "[14/14] Skipping adding cronjobs to system..."
+    echo "[i] Existing configuration found, skipping creation..."
+    echo "[i] Skipping gathering tokens..."
+    echo "[i] Skipping gathering chat IDs..."
+    echo "[i] Skipping adding configuration file..."
+    echo "[i] Skipping adding tokens and IDs to configuration..."
+    echo "[i] Skipping adding cronjobs to system..."
 fi
 
 #############################################################################
@@ -263,44 +264,51 @@ echo
 echo "*** INSTALLING BOTS & SCRIPTS ***"
 
 # Install newest version of TelegramBotsGenerateConfig always
-echo "Installing TelegramBotsGenerateConfig"
+echo "[+] Installing TelegramBotsGenerateConfig"
 wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramBotsGenerateConfig.sh -O /usr/local/bin/TelegramBotsGenerateConfig
 chmod 700 /usr/local/bin/TelegramBotsGenerateConfig
 
 # Install TelegramMetricsBot when enabled
 if [ "$Install_TelegramMetricsBot" = 'yes' ]; then
-    echo "Installing TelegramMetricsBot"
+    echo "[+] Installing TelegramMetricsBot"
     wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramMetricsBot.sh -O /usr/local/bin/TelegramMetricsBot
     chmod 700 /usr/local/bin/TelegramMetricsBot
 fi
 
 # Install TelegramUpdateBot when enabled
 if [ "$Install_TelegramUpdateBot" = 'yes' ]; then
-    echo "Installing TelegramUpdateBot"
+    echo "[+] Installing TelegramUpdateBot"
     wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramUpdateBot.sh -O /usr/local/bin/TelegramUpdateBot
     chmod 700 /usr/local/bin/TelegramUpdateBot
 fi
 
 # Install TelegramLoginBot when enabled
 if [ "$Install_TelegramLoginBot" = 'yes' ]; then
-    echo "Installing TelegramLoginBot"
+    echo "[+] Installing TelegramLoginBot"
     wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramLoginBot.sh -O /usr/local/bin/TelegramLoginBot
     chmod 700 /usr/local/bin/TelegramLoginBot
 fi
 
 # Install TelegramAlertBot when enabled
 if [ "$Install_TelegramAlertBot" = 'yes' ]; then
-    echo "Installing TelegramAlertBot"
+    echo "[+] Installing TelegramAlertBot"
     wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramAlertBot.sh -O /usr/local/bin/TelegramAlertBot
     chmod 700 /usr/local/bin/TelegramAlertBot
 fi
 
 # Install TelegramOutageBot when enabled
 if [ "$Install_TelegramOutageBot" = 'yes' ]; then
-    echo "Installing TelegramOutageBot"
+    echo "[+] Installing TelegramOutageBot"
     wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramOutageBot.sh -O /usr/local/bin/TelegramOutageBot
     chmod 700 /usr/local/bin/TelegramOutageBot
 fi
+
+#############################################################################
+# CRON CREATE OR UPDATE
+#############################################################################
+
+# Creating or updating cronjobs
+/bin/bash /usr/local/bin/TelegramBotsGenerateConfig
 
 #############################################################################
 # NOTICE
