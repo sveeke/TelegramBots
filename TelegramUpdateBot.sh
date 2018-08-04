@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.3.0-ALPHA (08-07-2018)
+# Version 0.3.1-ALPHA (08-07-2018)
 #############################################################################
 
 #############################################################################
@@ -24,6 +24,20 @@ TelegramUpdateBotVersion='0.3.0'
 
 # Source variables in TelegramBots.conf
 . /etc/TelegramBots/TelegramBots.conf
+
+#############################################################################
+# FUNCTIONS
+#############################################################################
+
+# Update server, gather list with updates and length of update list
+GatherUpdates () {
+    # Update repository
+    apt-get -qq update
+    # List with available updates to variable AvailableUpdates
+    AvailableUpdates="$(aptitude -F "%p" search '~U')"
+    # Outputs the character length of AvailableUpdates in LengthUpdates
+    LengthUpdates="${#AvailableUpdates}"
+}
 
 #############################################################################
 # ARGUMENTS
@@ -76,20 +90,6 @@ case $1 in
 esac
 
 #############################################################################
-# FUNCTIONS
-#############################################################################
-
-# Update server, gather list with updates and length of update list
-GatherUpdates () {
-    # Update repository
-    apt-get -qq update
-    # List with available updates to variable AvailableUpdates
-    AvailableUpdates="$(aptitude -F "%p" search '~U')"
-    # Outputs the character length of AvailableUpdates in LengthUpdates
-    LengthUpdates="${#AvailableUpdates}"
-}
-
-#############################################################################
 # SENT UPDATES IF AVAILABLE
 #############################################################################
 
@@ -117,4 +117,4 @@ UpdatePayload="chat_id=$Chat_TelegramUpdateBot&text=$(echo -e "$UpdateMessage")&
 # Sent updates payload to Telegram API
 curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "$UpdatePayload" $Url_TelegramUpdateBot > /dev/null 2>&1 &
 
-exit 0;;
+exit 0

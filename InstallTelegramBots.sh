@@ -93,7 +93,7 @@ if [ "$EUID" -ne 0 ]; then
 	echo "This script should be run as root."
 	echo "**********************************"
     echo
-	exit
+	exit 1
 fi
 echo -e "\\t\\t\\t\\t[YES]"
 
@@ -125,7 +125,7 @@ else
     echo "Access to the internet is required."
     echo "***********************************"
     echo
-    exit
+    exit 1
 fi
 
 #############################################################################
@@ -326,7 +326,7 @@ echo "[+] Generating or updating cronjobs"
 
 echo
 echo "#############################################################################"
-echo "# INSTALLATION COMPLETE                                                     #"
+echo "#                         INSTALLATION COMPLETE                             #"
 echo "#############################################################################"
 echo "#                                                                           #"
 echo "#   Just type 'Telegram' and autocomplete (double tab) the bot or script    #"
@@ -337,4 +337,5 @@ echo "#                                                                         
 echo "#############################################################################"
 echo
 echo
-exit
+
+exit 0

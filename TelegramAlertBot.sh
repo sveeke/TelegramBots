@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.1.0-BETA (04-08-2018)
+# Version 0.1.1-BETA (04-08-2018)
 #############################################################################
 
 #############################################################################
@@ -121,4 +121,4 @@ if [[ "$CurrentDiskUsage" -ge "$DiskThreshold" ]]; then
     curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "$AlertPayloadDisk" $Url_TelegramAlertBot > /dev/null 2>&1 &
 fi
 
-exit 0;;
+exit 0

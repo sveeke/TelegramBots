@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.1.0-BETA (04-08-2018)
+# Version 0.1.1-BETA (04-08-2018)
 #############################################################################
 
 #############################################################################
@@ -24,6 +24,22 @@ TelegramMetricsBotVersion='0.1.0'
 
 # Source variables in TelegramBots.conf
 . /etc/TelegramBots/TelegramBots.conf
+
+#############################################################################
+# FUNCTIONS
+#############################################################################
+
+# Gather all metrics in variable MetricsMessage
+GatherMetrics() {
+read -r -d "" MetricsMessage << EOM
+*HOST:* $(uname -n)
+*UPTIME:* $(uptime -p)
+
+*LOAD:* $(cat /proc/loadavg | awk '{print $1" "$2" "$3}')
+*RAM:* $(awk '/^Mem/ {print $3}' <(free -m -h)) / $(awk '/^Mem/ {print $2}' <(free -m -h))
+*HDD:* $(df -h / --output=used -x tmpfs -x devtmpfs | tr -dc '1234567890GKMT.') / $(df -h / --output=size -x tmpfs -x devtmpfs | tr -dc '1234567890GKMT.') ($(df / --output=pcent -x tmpfs -x devtmpfs | tr -dc '0-9')%)
+EOM
+}
 
 #############################################################################
 # ARGUMENTS
@@ -61,22 +77,6 @@ case $1 in
 esac
 
 #############################################################################
-# FUNCTIONS
-#############################################################################
-
-# Gather all metrics in variable MetricsMessage
-GatherMetrics() {
-read -r -d "" MetricsMessage << EOM
-*HOST:* $(uname -n)
-*UPTIME:* $(uptime -p)
-
-*LOAD:* $(cat /proc/loadavg | awk '{print $1" "$2" "$3}')
-*RAM:* $(awk '/^Mem/ {print $3}' <(free -m -h)) / $(awk '/^Mem/ {print $2}' <(free -m -h))
-*HDD:* $(df -h / --output=used -x tmpfs -x devtmpfs | tr -dc '1234567890GKMT.') / $(df -h / --output=size -x tmpfs -x devtmpfs | tr -dc '1234567890GKMT.') ($(df / --output=pcent -x tmpfs -x devtmpfs | tr -dc '0-9')%)
-EOM
-}
-
-#############################################################################
 # SENT METRICS
 #############################################################################
 
@@ -88,3 +88,5 @@ MetricsPayload="chat_id=$Chat_TelegramMetricsBot&text=$MetricsMessage&parse_mode
 
 # Sent metrics payload to Telegram API
 curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "$MetricsPayload" $Url_TelegramMetricsBot > /dev/null 2>&1 &
+
+exit 0
