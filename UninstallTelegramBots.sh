@@ -23,8 +23,10 @@ rm /usr/local/bin/TelegramLoginBot*
 rm /usr/local/bin/TelegramOutageBot*
 rm /usr/local/bin/TelegramBotsGenerateConfig*
 rm /usr/local/bin/TelegramCronUpdate*
+rm /usr/local/bin/TelegramBotsUpgrade*
 rm /etc/cron.d/TelegramMetricsBot
 rm /etc/cron.d/TelegramUpdateBot
 rm /etc/cron.d/TelegramAlertBot
 rm /etc/cron.d/TelegramLoginBot
 rm /etc/cron.d/TelegramOutageBot
+rm /etc/cron.d/TelegramBotsAutoUpdate

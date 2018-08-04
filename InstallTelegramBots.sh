@@ -154,7 +154,7 @@ sleep 1
 
 echo
 echo "*** INSTALLING DEPENDENCIES ***"
-echo "[+] Installing curl and aptitude..."
+echo "[+] Installing dependencies..."
 apt-get -y -qq install curl
 
 if [ "$Install_TelegramUpdateBot" = 'yes' ]; then
@@ -314,7 +314,9 @@ fi
 if [ "$Install_TelegramOutageBot" = 'yes' ]; then
     echo "[+] Installing TelegramOutageBot"
     wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramOutageBot.sh -O /usr/local/bin/TelegramOutageBot
+    touch /etc/TelegramBots/TelegramOutageBotWebsites.list
     chmod 700 /usr/local/bin/TelegramOutageBot
+    chmod 700 /etc/TelegramBots/TelegramOutageBotWebsites
 fi
 
 #############################################################################
