@@ -105,6 +105,7 @@ if [ "$Install_TelegramOutageBot" = 'yes' ] &&
 fi
 
 # Restart cron
+echo
 echo "Restarting the cron service..."
 systemctl restart cron
 

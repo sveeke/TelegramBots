@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.6.1-ALPHA (14-07-2018)
+# Version 0.6.2-ALPHA (04-08-2018)
 #############################################################################
 
 #############################################################################
@@ -22,7 +22,8 @@
 # During normal installation, only one pair of token and chat ID will be
 # asked and used. If you want to use multiple Telegram Bots for the
 # different roles, add the tokens and chat IDs in the below variables.
-# Please note that you have to set them *all* for them to work.
+# Please note that you have to set them *all* (even the ones you don't use)
+# for them to work.
 
 # TelegramBots
 TelegramBotsAutoUpdate='no' # Default 'no'
@@ -43,7 +44,7 @@ Token_TelegramLoginBot='token'
 Chat_TelegramLoginBot='id'
 
 # TelegramAlertBot
-Install_TelegramAlertBot='no' # Default 'yes'
+Install_TelegramAlertBot='yes' # Default 'yes'
 Token_TelegramAlertBot='token'
 Chat_TelegramAlertBot='id'
 
@@ -99,10 +100,10 @@ echo -e "\\t\\t\\t\\t[YES]"
 # Checking whether Debian is installed
 echo -n "[2/3] Running Debian..."
 if [ -f /etc/debian_version ]; then
-    echo -e "\\t\\t\\t\\t\\t[YES]"
+    echo -e "\\t\\t\\t\\t\\t\\t[YES]"
 
 else
-    echo -e "\\t\\t\\t\\t\\t[NO]"
+    echo -e "\\t\\t\\t\\t\\t\\t[NO]"
     echo
     echo "*************************************"
     echo "This script will only work on Debian."
@@ -154,7 +155,15 @@ sleep 1
 echo
 echo "*** INSTALLING DEPENDENCIES ***"
 echo "[+] Installing curl and aptitude..."
-apt-get -y -qq install curl aptitude
+apt-get -y -qq install curl
+
+if [ "$Install_TelegramUpdateBot" = 'yes' ]; then
+    apt-get -y -qq install aptitude
+fi
+
+if [ "$Install_TelegramAlertBot" = 'yes' ]; then
+    apt-get -y -qq install bc
+fi
 
 #############################################################################
 # CONFIGURATION
@@ -315,14 +324,16 @@ fi
 #############################################################################
 
 echo
-echo
-echo '*** The installation has been completed! ***'
-echo
-echo 'Some tips:'
-echo '+ Just type "Telegram" and autocomplete (double tab) the bot you want to test.'
-echo '+ You can change the default settings in /etc/TelegramBots/TelegramBots.conf.'
-echo
-echo 'Good luck!'
+echo "#############################################################################"
+echo "# INSTALLATION COMPLETE                                                     #"
+echo "#############################################################################"
+echo "#                                                                           #"
+echo "#   Just type 'Telegram' and autocomplete (double tab) the bot or script    #"
+echo "#   you want to use. You can change the default bot and script settings in  #"
+echo "#   /etc/TelegramBots/TelegramBots.conf. After changing the config, run     #"
+echo "#   'TelegramBotsGenerateConfig' to effectuate the changes.                 #"
+echo "#                                                                           #"
+echo "#############################################################################"
 echo
 echo
 exit

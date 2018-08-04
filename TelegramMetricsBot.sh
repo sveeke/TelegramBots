@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.4.0-ALPHA (10-07-2018)
+# Version 0.4.1-ALPHA (04-08-2018)
 #############################################################################
 
 #############################################################################
@@ -16,20 +16,20 @@
 #############################################################################
 
 # General information
-TelegramMetricsBotVersion='0.4.0'
+TelegramMetricsBotVersion='0.4.1'
 
 # Source variables in TelegramBots.conf
 . /etc/TelegramBots/TelegramBots.conf
 
 # Primary function
-GatherMetrics () {
+GatherMetrics() {
 read -r -d "" MetricsMessage << EOM
 *HOST:* $(uname -n)
 *UPTIME:* $(uptime -p)
 
-*LOAD:* $(uptime | grep -oP '(?<=average:).*')
+*LOAD:* $(cat /proc/loadavg | awk '{print $1" "$2" "$3}')
 *RAM:* $(awk '/^Mem/ {print $3}' <(free -m -h)) / $(awk '/^Mem/ {print $2}' <(free -m -h))
-*HDD:* $(df -h / --output=used -x tmpfs -x devtmpfs | tr -dc '1234567890GMT.') / $(df -h / --output=size -x tmpfs -x devtmpfs | tr -dc '1234567890GMT.') ($(df / --output=pcent -x tmpfs -x devtmpfs | tr -dc '0-9')%)
+*HDD:* $(df -h / --output=used -x tmpfs -x devtmpfs | tr -dc '1234567890GKMT.') / $(df -h / --output=size -x tmpfs -x devtmpfs | tr -dc '1234567890GKMT.') ($(df / --output=pcent -x tmpfs -x devtmpfs | tr -dc '0-9')%)
 EOM
 }
 

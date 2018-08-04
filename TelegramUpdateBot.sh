@@ -24,12 +24,12 @@ TelegramUpdateBotVersion='0.3.0'
 # Primary function
 GatherUpdates () {
 
-# Update repository
-apt-get -qq update
+    # Update repository
+    apt-get -qq update
 
-# List with available updates to variable $UPDATES
-AvailableUpdates="$(aptitude -F "%p" search '~U')"
-LengthUpdates="${#AvailableUpdates}"
+    # List with available updates to variable $UPDATES
+    AvailableUpdates="$(aptitude -F "%p" search '~U')"
+    LengthUpdates="${#AvailableUpdates}"
 }
 
 # Enable the use of arguments
