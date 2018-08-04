@@ -1,10 +1,11 @@
 # TelegramBots
-TelegramBots is a collection of scripts that work well with a default Telegram bot. As of now, there are three 'bots':
+TelegramBots is a collection of scripts that work well with a default Telegram bot. As of now, there are four 'bots':
 
 | Bot name | Description | Status |
 | --- | --- | --- |
-| TelegramMetricsBot | Sents metrics like load, ram and disk | Experimental |
-| TelegramUpdateBot | Notifies when an update is available | Experimental |
+| TelegramMetricsBot | Sents metrics like load, ram and disk | Beta |
+| TelegramUpdateBot | Notifies when an update is available | Alpha |
+| TelegramAlertBot | Sents alerts with predefined thresholds | Beta |
 | TelegramLoginBot | Notifies when someone logs in to the server | Experimental |
 
 The bots are easily configurable from a single config file located in /etc/TelegramBots/TelegramBots.conf.
@@ -17,9 +18,10 @@ Since I mostly use Debian (with UK/US locale and bash), I created the bots witho
 
 # Requirements
 * Telegram bot
-* Debian with root access
-* Aptitude
-* Curl
+* Debian with Bash and root access
+* Aptitude (TelegramUpdateBot)
+* bc (TelegramAlertBot)
+* Curl (all bots)
 
 # Installation
 Installing the bots is really simple, just follow the below steps:
@@ -34,12 +36,11 @@ Or use this command: `bash <(wget -qO- https://raw.githubusercontent.com/sveeke/
 Please note that the token and chat id you supply during the installation will be used for all bots. You can also use multiple Telegram bots and/or chats for these bot scripts, just add them to the top of `InstallTelegramBots.sh` (below `TELEGRAM VARIABLES`) then.
 
 # Updating the bots
-Updating is also really simple. Just run the newest `InstallTelegramBots.sh` and everything will be updated. The install script checks if a previous configuration is available and if so, ignores it.
+Updating is also really simple. Just run the newest `InstallTelegramBots.sh` and everything will be updated. The install script checks if a previous configuration is available and if so, ignores it. You can also enable automatic updates, but this is not recommended for obvious reasons.
 
 # Future plans
 I'm working on adding the following:
 
 * TelegramLoginBot that notifies when someone logs in on the server.
 * TelegramOutageBot that notifies when servers or websites are down.
-* TelegramAlertBot that notifies when server resources exceed the defined limit (e.g. at 75% disk space or at 90% load).
-
+* CentOS support.
