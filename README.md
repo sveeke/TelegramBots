@@ -1,5 +1,5 @@
 # TelegramBots
-TelegramBots is a collection of scripts that work well with a default Telegram bot. As of now, there are four 'bots':
+TelegramBots is a collection of scripts that work well with a default Telegram bot. As of now, there are five 'bots':
 
 | Bot name | Description | Status |
 | --- | --- | --- |
@@ -7,8 +7,9 @@ TelegramBots is a collection of scripts that work well with a default Telegram b
 | TelegramUpdateBot | Notifies when an update is available | Alpha |
 | TelegramAlertBot | Sents alerts with predefined thresholds | Beta |
 | TelegramLoginBot | Notifies when someone logs in to the server | Experimental |
+| TelegramOutageBot | Alerts when something is down | Experimental |
 
-The bots are easily configurable from a single config file located in /etc/TelegramBots/TelegramBots.conf.
+The bots are easily configurable from a single config file located in `/etc/TelegramBots/TelegramBots.conf`. After making changes to `TelegramBots.conf`, simply use `TelegramBotsGenerateConfig` to effectuate the changes. You can use `TelegramBotsUpgrade` to update all bots to the newest version.
 
 Some examples of messages:
 
@@ -18,10 +19,10 @@ Since I mostly use Debian (with UK/US locale and bash), I created the bots witho
 
 # Requirements
 * Telegram bot
-* Debian with Bash and root access
+* Debian with bash and root access
 * Aptitude (TelegramUpdateBot)
 * bc (TelegramAlertBot)
-* Curl (all bots)
+* curl (all bots)
 
 # Installation
 Installing the bots is really simple, just follow the below steps:
@@ -36,11 +37,11 @@ Or use this command: `bash <(wget -qO- https://raw.githubusercontent.com/sveeke/
 Please note that the token and chat id you supply during the installation will be used for all bots. You can also use multiple Telegram bots and/or chats for these bot scripts, just add them to the top of `InstallTelegramBots.sh` (below `TELEGRAM VARIABLES`) then.
 
 # Updating the bots
-Updating is also really simple. Just run the newest `InstallTelegramBots.sh` and everything will be updated. The install script checks if a previous configuration is available and if so, ignores it. You can also enable automatic updates, but this is not recommended for obvious reasons.
+Updating is also really simple. Just run `TelegramBotsUpgrade` or download and run the newest `InstallTelegramBots.sh`. The install script checks if a previous configuration is available and if so, will use that. You can also enable automatic updates, but this is not recommended for obvious reasons.
 
 # Future plans
 I'm working on adding the following:
 
 * TelegramLoginBot that notifies when someone logs in on the server.
-* TelegramOutageBot that notifies when servers or websites are down.
+* TelegramOutageBot that also checks TLS certificates, mailservers and other stuff
 * CentOS support.
