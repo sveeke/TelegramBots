@@ -64,7 +64,7 @@ echo "[+] Reading TelegramBots.conf..."
 # Update cronjob for TelegramBotsAutoUpdate
 if [ "$TelegramBotsAutoUpdate" = 'yes' ]; then
     echo "[+] Updating cronjob for TelegramBotsAutoUpdate"
-    echo -e "# This cronjob activates the TelegramBotsAutoUpdate on the chosen schedule\n\n$Cron_TelegramBotsAutoUpdate root /usr/local/bin/TelegramBotsAutoUpdate" > /etc/cron.d/TelegramBotsAutoUpdate
+    echo -e "# This cronjob activates TelegramBotsUpgrade on the chosen schedule\n\n$Cron_TelegramBotsAutoUpdate root /usr/local/bin/TelegramBotsUpgrade" > /etc/cron.d/TelegramBotsAutoUpdate
 fi
 
 # Update cronjob for TelegramMetricsBot

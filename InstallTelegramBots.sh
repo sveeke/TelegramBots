@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.6.3-ALPHA (04-08-2018)
+# Version 0.6.4-ALPHA (04-08-2018)
 #############################################################################
 
 #############################################################################
@@ -272,6 +272,11 @@ fi
 echo
 echo "*** INSTALLING BOTS & SCRIPTS ***"
 
+# Install newest version of TelegramBotsUpgrade always
+echo "[+] Installing TelegramBotsUpgrade"
+wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramBotsUpgrade.sh -O /usr/local/bin/TelegramBotsUpgrade
+chmod 700 /usr/local/bin/TelegramBotsUpgrade
+
 # Install newest version of TelegramBotsGenerateConfig always
 echo "[+] Installing TelegramBotsGenerateConfig"
 wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramBotsGenerateConfig.sh -O /usr/local/bin/TelegramBotsGenerateConfig
@@ -317,7 +322,6 @@ fi
 #############################################################################
 
 # Creating or updating cronjobs
-echo "[+] Generating or updating cronjobs"
 /bin/bash /usr/local/bin/TelegramBotsGenerateConfig
 
 #############################################################################

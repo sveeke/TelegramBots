@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.1.1-ALPHA (08-07-2018)
+# Version 0.1.3-ALPHA (04-08-2018)
 #############################################################################
 
 #############################################################################
@@ -18,10 +18,13 @@
 rm -rf /etc/TelegramBots
 rm /usr/local/bin/TelegramMetricsBot*
 rm /usr/local/bin/TelegramUpdateBot*
+rm /usr/local/bin/TelegramAlertBot*
 rm /usr/local/bin/TelegramLoginBot*
 rm /usr/local/bin/TelegramOutageBot*
+rm /usr/local/bin/TelegramBotsGenerateConfig*
 rm /usr/local/bin/TelegramCronUpdate*
 rm /etc/cron.d/TelegramMetricsBot
 rm /etc/cron.d/TelegramUpdateBot
+rm /etc/cron.d/TelegramAlertBot
 rm /etc/cron.d/TelegramLoginBot
 rm /etc/cron.d/TelegramOutageBot

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.1.1-BETA (04-08-2018)
+# Version 0.1.2-BETA (04-08-2018)
 #############################################################################
 
 #############################################################################
@@ -20,7 +20,7 @@
 #############################################################################
 
 # Bot version
-TelegramMetricsBotVersion='0.1.0'
+TelegramMetricsBotVersion='0.1.2'
 
 # Source variables in TelegramBots.conf
 . /etc/TelegramBots/TelegramBots.conf
@@ -59,7 +59,7 @@ case $1 in
         echo
         exit 0;;
 
-    --version)
+    --version|-version|version|--v|-v)
         echo
         echo "TelegramMetricsBot $TelegramMetricsBotVersion"
         echo "Copyright (C) 2018 S. Veeke."

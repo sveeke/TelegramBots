@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.3.1-ALPHA (08-07-2018)
+# Version 0.3.2-ALPHA (08-07-2018)
 #############################################################################
 
 #############################################################################
@@ -20,7 +20,7 @@
 #############################################################################
 
 # Bot version
-TelegramUpdateBotVersion='0.3.0'
+TelegramUpdateBotVersion='0.3.2'
 
 # Source variables in TelegramBots.conf
 . /etc/TelegramBots/TelegramBots.conf
@@ -66,7 +66,7 @@ case $1 in
         echo
         exit 0;;
 
-    --cli|--command-line|--local)
+    --cli|-cli|cli|--dry-run|-dry-run|--dry|-dry-run|dry)
         GatherUpdates
 
         # Notify user when there are no updates
@@ -75,7 +75,7 @@ case $1 in
             echo "TelegramUpdateBot:"
             echo "There are no updates available on $(uname -n)."
             echo
-            exit 0;;
+            exit 0
         fi
 
         # Notify user when there are updates available
@@ -98,7 +98,7 @@ GatherUpdates
 
 # Do nothing if there are no updates
 if [ -z "$AvailableUpdates" ]; then
-    exit 0;;
+    exit 0
 fi
 
 # If update list length is less than 4000 characters, then sent update list
