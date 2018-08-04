@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.1.0-ALPHA (14-07-2018)
+# Version 0.2.0-ALPHA (04-08-2018)
 #############################################################################
 
 #############################################################################
@@ -26,12 +26,22 @@ LoadThreshold="$(echo "$Threshold_Load_TelegramAlertBot" | tr -d '%')"
 DiskThreshold="$(echo "$Threshold_Disk_TelegramAlertBot" | tr -d '%')"
 MemoryThreshold="$(echo "$Threshold_Memory_TelegramAlertBot" | tr -d '%')"
 
+# Core and load information
 CoreAmount="$(grep 'cpu cores' /proc/cpuinfo | wc -l)"
 MaxLoadServer="$CoreAmount.00"
 CurrentLoad="$(cat /proc/loadavg | awk '{print $3}')"
-CurrentLoadPercentage="$(echo "($CurrentLoad/$MaxLoadServer)*100" | bc -l)"
+CurrentLoadPercentage="$(echo "("$CurrentLoad"/"$MaxLoadServer")*100" | bc -l)"
 CurrentLoadPercentageRounded="$(printf "%.0f\n" $(echo "$CurrentLoadPercentage" | tr -d '%'))"
+
+# Disk usage information
 CurrentDiskUsage="$(df -h / | grep / | awk {'print $5'} | tr -d '%')"
+
+# Memory usage information
+CurrentMemoryUsage="$(free -m | awk '/^Mem/ {print $3}' | tr -d 'GKMT')"
+MaxMemoryServer="$(free -m | awk '/^Mem/ {print $2}' | tr -d 'GKMT')"
+CurrentMemoryPercentage="$(echo "("$CurrentMemoryUsage"/"$MaxMemoryServer")*100" | bc -l)"
+CurrentMemoryPercentageRounded="$(printf "%.0f\n" $(echo "$CurrentMemoryPercentage" | tr -d '%'))"
+
 
 # Enable the use of arguments
 case $1 in
@@ -60,7 +70,7 @@ case $1 in
 
 # Disk usage
 if [[ "$CurrentDiskUsage" -ge "$DiskThreshold" ]]; then
-    AlertMessage="\xE2\x9A\xA0 *ALERT: DISK THRESHOLD REACHED*\\n\\nDisk usage ($CurrentDiskUsage%) on *$(uname -n)* exceeds the threshold of $Threshold_Hdd_TelegramAlertBot\\n\\n*Filesystem info:*\\n$(df -h)"
+    AlertMessage="\xE2\x9A\xA0 *ALERT: FILE SYSTEM*\\n\\nDisk usage ($CurrentDiskUsage%) on *$(uname -n)* exceeds the threshold of $Threshold_Hdd_TelegramAlertBot\\n\\n*Filesystem info:*\\n$(df -h)"
     AlertPayload="chat_id=$Chat_TelegramAlertBot&text=$(echo -e "$AlertMessage")&parse_mode=Markdown&disable_web_page_preview=true"
     curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "$AlertPayload" $Url_TelegramAlertBot > /dev/null 2>&1 &
 fi
@@ -72,4 +82,11 @@ AlertPayload="chat_id=$Chat_TelegramAlertBot&text=$(echo -e "$AlertMessage")&par
 curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "$AlertPayload" $Url_TelegramAlertBot > /dev/null 2>&1 &
 fi
 
+# Server load
+if [[ "$CurrentMemoryPercentageRounded" -ge "$MemoryThreshold" ]]; then
+AlertMessage="\xE2\x9A\xA0 *ALERT: SERVER MEMORY*\\n\\nMemory usage ($CurrentMemoryPercentageRounded%) on *$(uname -n)* exceeds the threshold of $Threshold_Memory_TelegramAlertBot\\n\\n*Memory usage:*\\n$(free -m -h)"
+AlertPayload="chat_id=$Chat_TelegramAlertBot&text=$(echo -e "$AlertMessage")&parse_mode=Markdown&disable_web_page_preview=true"
+curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "$AlertPayload" $Url_TelegramAlertBot > /dev/null 2>&1 &
+fi
 
+exit
