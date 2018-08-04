@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.3.1-ALPHA (14-07-2018)
+# Version 0.1.0-BETA (04-08-2018)
 #############################################################################
 
 #############################################################################
@@ -15,20 +15,20 @@
 # > GitHub      sveeke
 #############################################################################
 
-# General information
-TelegramBotsGenerateConfigVersion='0.3.0'
+#############################################################################
+# VARIABLES
+#############################################################################
 
-echo
-echo "*** UPDATING CRONJOBS ***"
-echo
+# Script version
+TelegramBotsGenerateConfigVersion='0.1.0'
 
-# Source TelegramBots.conf
-echo "[+] Reading TelegramBots.conf..."
-. /etc/TelegramBots/TelegramBots.conf
+#############################################################################
+# ARGUMENTS
+#############################################################################
 
-# Enable the use of arguments
+# Enable help and version
 case $1 in
-    --help|-help|help|--h|-h|help)
+    --help|-help|help|--h|-h)
         echo
         echo "USAGE: TelegramBotsGenerateConfig [OPTION]..."
         echo "Execute changes in TelegramBots configuration file on system."
@@ -39,7 +39,7 @@ case $1 in
         echo
         exit 0;;
 
-    --version)
+    --version|-version|version|--v|-v)
         echo
         echo "TelegramBotsGenerateConfig $TelegramBotsGenerateConfigVersion"
         echo "Copyright (C) 2018 S. Veeke."
@@ -49,22 +49,25 @@ case $1 in
         exit 0;;
 esac
 
-# Generate config function (work in progress)
-#GenerateConfig() {
-#    if [ "$1" = 'yes' ]; then
-#        echo "Updating cronjob for $1"
-#        echo -e "# This cronjob activates the "$1" on the chosen schedule\n\nCron_"$1" root /usr/local/bin/TelegramMetricsBot" > /etc/cron.d/"$1"
-#        chmod 750 /etc/cron.d/TelegramMetricsBot
-#    fi
-#}
+#############################################################################
+# UPDATE CRONJOBS
+#############################################################################
 
-# Automatic update of TelegramBots
+echo
+echo "*** UPDATING CRONJOBS ***"
+echo
+
+# Source TelegramBots.conf
+echo "[+] Reading TelegramBots.conf..."
+. /etc/TelegramBots/TelegramBots.conf
+
+# Update cronjob for TelegramBotsAutoUpdate
 if [ "$TelegramBotsAutoUpdate" = 'yes' ]; then
     echo "[+] Updating cronjob for TelegramBotsAutoUpdate"
     echo -e "# This cronjob activates the TelegramBotsAutoUpdate on the chosen schedule\n\n$Cron_TelegramBotsAutoUpdate root /usr/local/bin/TelegramBotsAutoUpdate" > /etc/cron.d/TelegramBotsAutoUpdate
 fi
 
-# TelegramMetricsBot
+# Update cronjob for TelegramMetricsBot
 if [ "$Install_TelegramMetricsBot" = 'yes' ] &&
 [ -f /usr/local/bin/TelegramMetricsBot ]; then
     echo "[+] Updating cronjob for TelegramMetricsBot"
@@ -72,7 +75,7 @@ if [ "$Install_TelegramMetricsBot" = 'yes' ] &&
     chmod 750 /etc/cron.d/TelegramMetricsBot
 fi
 
-# TelegramUpdateBot
+# Update cronjob for TelegramUpdateBot
 if [ "$Install_TelegramUpdateBot" = 'yes' ] &&
 [ -f /usr/local/bin/TelegramUpdateBot ]; then
     echo "[+] Updating cronjob for TelegramUpdateBot"
@@ -80,7 +83,7 @@ if [ "$Install_TelegramUpdateBot" = 'yes' ] &&
     chmod 750 /etc/cron.d/TelegramUpdateBot
 fi
 
-# TelegramLoginBot
+# Update cronjob for TelegramLoginBot
 if [ "$Install_TelegramLoginBot" = 'yes' ] &&
 [ -f /usr/local/bin/TelegramLoginBot ]; then
     echo "[+] Updating cronjob for TelegramLoginBot"
@@ -88,7 +91,7 @@ if [ "$Install_TelegramLoginBot" = 'yes' ] &&
     chmod 750 /etc/cron.d/TelegramLoginBot
 fi
 
-# TelegramAlertBot
+# Update cronjob for TelegramAlertBot
 if [ "$Install_TelegramAlertBot" = 'yes' ] &&
 [ -f /usr/local/bin/TelegramAlertBot ]; then
     echo "[+] Updating cronjob for TelegramAlertBot"
@@ -96,7 +99,7 @@ if [ "$Install_TelegramAlertBot" = 'yes' ] &&
     chmod 750 /etc/cron.d/TelegramAlertBot
 fi
 
-# TelegramOutageBot
+# Update cronjob for TelegramOutageBot
 if [ "$Install_TelegramOutageBot" = 'yes' ] &&
 [ -f /usr/local/bin/TelegramOutageBot ]; then
     echo "[+] Updating cronjob for TelegramOutageBot"
@@ -106,8 +109,8 @@ fi
 
 # Restart cron
 echo
-echo "Restarting the cron service..."
+echo "[+] Restarting the cron service..."
 systemctl restart cron
 
 echo
-exit 0
+exit 0;;

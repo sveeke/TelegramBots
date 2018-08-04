@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.4.1-ALPHA (04-08-2018)
+# Version 0.1.0-BETA (04-08-2018)
 #############################################################################
 
 #############################################################################
@@ -15,25 +15,21 @@
 # > GitHub      sveeke
 #############################################################################
 
-# General information
-TelegramMetricsBotVersion='0.4.1'
+#############################################################################
+# VARIABLES
+#############################################################################
+
+# Bot version
+TelegramMetricsBotVersion='0.1.0'
 
 # Source variables in TelegramBots.conf
 . /etc/TelegramBots/TelegramBots.conf
 
-# Primary function
-GatherMetrics() {
-read -r -d "" MetricsMessage << EOM
-*HOST:* $(uname -n)
-*UPTIME:* $(uptime -p)
+#############################################################################
+# ARGUMENTS
+#############################################################################
 
-*LOAD:* $(cat /proc/loadavg | awk '{print $1" "$2" "$3}')
-*RAM:* $(awk '/^Mem/ {print $3}' <(free -m -h)) / $(awk '/^Mem/ {print $2}' <(free -m -h))
-*HDD:* $(df -h / --output=used -x tmpfs -x devtmpfs | tr -dc '1234567890GKMT.') / $(df -h / --output=size -x tmpfs -x devtmpfs | tr -dc '1234567890GKMT.') ($(df / --output=pcent -x tmpfs -x devtmpfs | tr -dc '0-9')%)
-EOM
-}
-
-# Enable the use of arguments
+# Enable help, version and a cli option
 case $1 in
     --help|-help|help|--h|-h|help)
         echo
@@ -56,15 +52,33 @@ case $1 in
         echo
         exit 0;;
 
-    --cli|--command-line|--local)
+    --cli|-cli|cli|--dry-run|-dry-run|--dry|-dry-run|dry)
         GatherMetrics
-        echo
-        echo "TelegramMetricsBot:"
         echo
         echo "${MetricsMessage//'*'}"
         echo
         exit 0;;
 esac
+
+#############################################################################
+# FUNCTIONS
+#############################################################################
+
+# Gather all metrics in variable MetricsMessage
+GatherMetrics() {
+read -r -d "" MetricsMessage << EOM
+*HOST:* $(uname -n)
+*UPTIME:* $(uptime -p)
+
+*LOAD:* $(cat /proc/loadavg | awk '{print $1" "$2" "$3}')
+*RAM:* $(awk '/^Mem/ {print $3}' <(free -m -h)) / $(awk '/^Mem/ {print $2}' <(free -m -h))
+*HDD:* $(df -h / --output=used -x tmpfs -x devtmpfs | tr -dc '1234567890GKMT.') / $(df -h / --output=size -x tmpfs -x devtmpfs | tr -dc '1234567890GKMT.') ($(df / --output=pcent -x tmpfs -x devtmpfs | tr -dc '0-9')%)
+EOM
+}
+
+#############################################################################
+# SENT METRICS
+#############################################################################
 
 # Run function
 GatherMetrics

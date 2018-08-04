@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.2.1-ALPHA (08-07-2018)
+# Version 0.3.0-ALPHA (08-07-2018)
 #############################################################################
 
 #############################################################################
@@ -15,26 +15,23 @@
 # > GitHub      sveeke
 #############################################################################
 
-# General information
+#############################################################################
+# VARIABLES
+#############################################################################
+
+# Bot version
 TelegramUpdateBotVersion='0.3.0'
 
 # Source variables in TelegramBots.conf
 . /etc/TelegramBots/TelegramBots.conf
 
-# Primary function
-GatherUpdates () {
+#############################################################################
+# ARGUMENTS
+#############################################################################
 
-    # Update repository
-    apt-get -qq update
-
-    # List with available updates to variable $UPDATES
-    AvailableUpdates="$(aptitude -F "%p" search '~U')"
-    LengthUpdates="${#AvailableUpdates}"
-}
-
-# Enable the use of arguments
+# Enable help, version and a cli option
 case $1 in
-    --help|-help|help|--h|-h|help)
+    --help|-help|help|--h|-h)
         echo
         echo "USAGE: TelegramUpdateBot [OPTION]..."
         echo "Sent package updates to a Telegram bot."
@@ -46,7 +43,7 @@ case $1 in
         echo
         exit 0;;
 
-    --version)
+    --version|-version|version|--v|-v)
         echo
         echo "TelegramUpdateBot $TelegramUpdateBotVersion"
         echo "Copyright (C) 2018 S. Veeke."
@@ -64,7 +61,7 @@ case $1 in
             echo "TelegramUpdateBot:"
             echo "There are no updates available on $(uname -n)."
             echo
-            exit 0
+            exit 0;;
         fi
 
         # Notify user when there are updates available
@@ -78,12 +75,30 @@ case $1 in
         exit 0;;
 esac
 
+#############################################################################
+# FUNCTIONS
+#############################################################################
+
+# Update server, gather list with updates and length of update list
+GatherUpdates () {
+    # Update repository
+    apt-get -qq update
+    # List with available updates to variable AvailableUpdates
+    AvailableUpdates="$(aptitude -F "%p" search '~U')"
+    # Outputs the character length of AvailableUpdates in LengthUpdates
+    LengthUpdates="${#AvailableUpdates}"
+}
+
+#############################################################################
+# SENT UPDATES IF AVAILABLE
+#############################################################################
+
 # Run function
 GatherUpdates
 
 # Do nothing if there are no updates
 if [ -z "$AvailableUpdates" ]; then
-    exit 0
+    exit 0;;
 fi
 
 # If update list length is less than 4000 characters, then sent update list
@@ -102,4 +117,4 @@ UpdatePayload="chat_id=$Chat_TelegramUpdateBot&text=$(echo -e "$UpdateMessage")&
 # Sent updates payload to Telegram API
 curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "$UpdatePayload" $Url_TelegramUpdateBot > /dev/null 2>&1 &
 
-exit
+exit 0;;
