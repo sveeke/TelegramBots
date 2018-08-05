@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.1.3-BETA (05-08-2018)
+# Version 0.1.4-BETA (05-08-2018)
 #############################################################################
 
 #############################################################################
@@ -20,17 +20,42 @@
 #############################################################################
 
 # Bot version
-TelegramMetricsBotVersion='0.1.3'
+TelegramMetricsBotVersion='0.1.4'
 
 # Source variables in TelegramBots.conf
 . /etc/TelegramBots/TelegramBots.conf
 
-# Gather memory information
-TotalMemory="$(free -m | awk '/^Mem/ {print $2}')"
-FreeMemory="$(free -m | awk '/^Mem/ {print $4}')"
-BuffersMemory="$(free -m | awk '/^Mem/ {print $6}')"
-CachedMemory="$(free -m | awk '/^Mem/ {print $7}')"
-UsedMemory="$(echo "("$TotalMemory"-"$FreeMemory"-"$BuffersMemory"-"$CachedMemory")" | bc -l)"
+# Gather OS version
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    OperatingSystem="$NAME"
+    OperatingSystemVersion="$VERSION_ID"
+fi
+
+# Use older format in free when Debian 8 is used
+if [ "$OperatingSystem" == "Debian GNU/Linux" ] && [ "$OperatingSystemVersion" -eq "8" ]; then
+    TotalMemory="$(free -m | awk '/^Mem/ {print $2}')"
+    FreeMemory="$(free -m | awk '/^Mem/ {print $4}')"
+    BuffersMemory="$(free -m | awk '/^Mem/ {print $6}')"
+    CachedMemory="$(free -m | awk '/^Mem/ {print $7}')"
+    UsedMemory="$(echo "("$TotalMemory"-"$FreeMemory"-"$BuffersMemory"-"$CachedMemory")" | bc -l)"
+fi
+
+# Use newer format in free when Debian 9 is used
+if [ "$OperatingSystem" == "Debian GNU/Linux" ] && [ "$OperatingSystemVersion" -eq "9" ]; then
+    TotalMemory="$(free -m | awk '/^Mem/ {print $2}')"
+    FreeMemory="$(free -m | awk '/^Mem/ {print $4}')"
+    BuffersCachedMemory="$(free -m | awk '/^Mem/ {print $6}')"
+    UsedMemory="$(echo "("$TotalMemory"-"$FreeMemory"-"$BuffersCachedMemory")" | bc -l)"
+fi
+
+# Use newer format in free when CentOS 7 is used
+if [ "$OperatingSystem" == "CentOS Linux" ] && [ "$OperatingSystemVersion" -eq "7" ]; then
+    TotalMemory="$(free -m | awk '/^Mem/ {print $2}')"
+    FreeMemory="$(free -m | awk '/^Mem/ {print $4}')"
+    BuffersCachedMemory="$(free -m | awk '/^Mem/ {print $6}')"
+    UsedMemory="$(echo "("$TotalMemory"-"$FreeMemory"-"$BuffersCachedMemory")" | bc -l)"
+fi
 
 #############################################################################
 # FUNCTIONS

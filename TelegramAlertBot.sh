@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.1.2-BETA (04-08-2018)
+# Version 0.1.3-BETA (05-08-2018)
 #############################################################################
 
 #############################################################################
@@ -20,7 +20,7 @@
 #############################################################################
 
 # Bot version
-TelegramAlertBotVersion='0.1.2'
+TelegramAlertBotVersion='0.1.3'
 
 # Source variables in TelegramBots.conf
 . /etc/TelegramBots/TelegramBots.conf
@@ -38,13 +38,43 @@ CurrentLoadPercentage="$(echo "("$CurrentLoad"/"$MaxLoadServer")*100" | bc -l)"
 CurrentLoadPercentageRounded="$(printf "%.0f\n" $(echo "$CurrentLoadPercentage" | tr -d '%'))"
 
 # Gather current server memory usage
-TotalMemory="$(free -m | awk '/^Mem/ {print $2}')"
-FreeMemory="$(free -m | awk '/^Mem/ {print $4}')"
-BuffersMemory="$(free -m | awk '/^Mem/ {print $6}')"
-CachedMemory="$(free -m | awk '/^Mem/ {print $7}')"
-UsedMemory="$(echo "("$TotalMemory"-"$FreeMemory"-"$BuffersMemory"-"$CachedMemory")" | bc -l)"
-CurrentMemoryPercentage="$(echo "("$UsedMemory"/"$TotalMemory")*100" | bc -l)"
-CurrentMemoryPercentageRounded="$(printf "%.0f\n" $(echo "$CurrentMemoryPercentage" | tr -d '%'))"
+# Gather OS version
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    OperatingSystem="$NAME"
+    OperatingSystemVersion="$VERSION_ID"
+fi
+
+# Use older format in free when Debian 8 is used
+if [ "$OperatingSystem" == "Debian GNU/Linux" ] && [ "$OperatingSystemVersion" -eq "8" ]; then
+    TotalMemory="$(free -m | awk '/^Mem/ {print $2}')"
+    FreeMemory="$(free -m | awk '/^Mem/ {print $4}')"
+    BuffersMemory="$(free -m | awk '/^Mem/ {print $6}')"
+    CachedMemory="$(free -m | awk '/^Mem/ {print $7}')"
+    UsedMemory="$(echo "("$TotalMemory"-"$FreeMemory"-"$BuffersMemory"-"$CachedMemory")" | bc -l)"
+    CurrentMemoryPercentage="$(echo "("$UsedMemory"/"$TotalMemory")*100" | bc -l)"
+    CurrentMemoryPercentageRounded="$(printf "%.0f\n" $(echo "$CurrentMemoryPercentage" | tr -d '%'))"
+fi
+
+# Use newer format in free when Debian 9 is used
+if [ "$OperatingSystem" == "Debian GNU/Linux" ] && [ "$OperatingSystemVersion" -eq "9" ]; then
+    TotalMemory="$(free -m | awk '/^Mem/ {print $2}')"
+    FreeMemory="$(free -m | awk '/^Mem/ {print $4}')"
+    BuffersCachedMemory="$(free -m | awk '/^Mem/ {print $6}')"
+    UsedMemory="$(echo "("$TotalMemory"-"$FreeMemory"-"$BuffersCachedMemory")" | bc -l)"
+    CurrentMemoryPercentage="$(echo "("$UsedMemory"/"$TotalMemory")*100" | bc -l)"
+    CurrentMemoryPercentageRounded="$(printf "%.0f\n" $(echo "$CurrentMemoryPercentage" | tr -d '%'))"
+fi
+
+# Use newer format in free when CentOS 7 is used
+if [ "$OperatingSystem" == "CentOS Linux" ] && [ "$OperatingSystemVersion" -eq "7" ]; then
+    TotalMemory="$(free -m | awk '/^Mem/ {print $2}')"
+    FreeMemory="$(free -m | awk '/^Mem/ {print $4}')"
+    BuffersCachedMemory="$(free -m | awk '/^Mem/ {print $6}')"
+    UsedMemory="$(echo "("$TotalMemory"-"$FreeMemory"-"$BuffersCachedMemory")" | bc -l)"
+    CurrentMemoryPercentage="$(echo "("$UsedMemory"/"$TotalMemory")*100" | bc -l)"
+    CurrentMemoryPercentageRounded="$(printf "%.0f\n" $(echo "$CurrentMemoryPercentage" | tr -d '%'))"
+fi
 
 # Gather current disk usage of /
 CurrentDiskUsage="$(df -h / | grep / | awk {'print $5'} | tr -d '%')"
