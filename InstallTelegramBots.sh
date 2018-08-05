@@ -316,7 +316,7 @@ if [ "$Install_TelegramOutageBot" = 'yes' ]; then
     wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramOutageBot.sh -O /usr/local/bin/TelegramOutageBot
     touch /etc/TelegramBots/TelegramOutageBotWebsites.list
     chmod 700 /usr/local/bin/TelegramOutageBot
-    chmod 700 /etc/TelegramBots/TelegramOutageBotWebsites
+    chmod 700 /etc/TelegramBots/TelegramOutageBotWebsites.list
 fi
 
 #############################################################################

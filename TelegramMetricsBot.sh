@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.1.2-BETA (04-08-2018)
+# Version 0.1.3-BETA (05-08-2018)
 #############################################################################
 
 #############################################################################
@@ -20,10 +20,17 @@
 #############################################################################
 
 # Bot version
-TelegramMetricsBotVersion='0.1.2'
+TelegramMetricsBotVersion='0.1.3'
 
 # Source variables in TelegramBots.conf
 . /etc/TelegramBots/TelegramBots.conf
+
+# Gather memory information
+TotalMemory="$(free -m | awk '/^Mem/ {print $2}')"
+FreeMemory="$(free -m | awk '/^Mem/ {print $4}')"
+BuffersMemory="$(free -m | awk '/^Mem/ {print $6}')"
+CachedMemory="$(free -m | awk '/^Mem/ {print $7}')"
+UsedMemory="$(echo "("$TotalMemory"-"$FreeMemory"-"$BuffersMemory"-"$CachedMemory")" | bc -l)"
 
 #############################################################################
 # FUNCTIONS
@@ -36,7 +43,7 @@ read -r -d "" MetricsMessage << EOM
 *UPTIME:* $(uptime -p)
 
 *LOAD:* $(cat /proc/loadavg | awk '{print $1" "$2" "$3}')
-*RAM:* $(awk '/^Mem/ {print $3}' <(free -m -h)) / $(awk '/^Mem/ {print $2}' <(free -m -h))
+*RAM:* $UsedMemory M / $TotalMemory M
 *HDD:* $(df -h / --output=used -x tmpfs -x devtmpfs | tr -dc '1234567890GKMT.') / $(df -h / --output=size -x tmpfs -x devtmpfs | tr -dc '1234567890GKMT.') ($(df / --output=pcent -x tmpfs -x devtmpfs | tr -dc '0-9')%)
 EOM
 }

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.1.1-BETA (04-08-2018)
+# Version 0.1.2-BETA (04-08-2018)
 #############################################################################
 
 #############################################################################
@@ -20,7 +20,7 @@
 #############################################################################
 
 # Bot version
-TelegramAlertBotVersion='0.1.0'
+TelegramAlertBotVersion='0.1.2'
 
 # Source variables in TelegramBots.conf
 . /etc/TelegramBots/TelegramBots.conf
@@ -38,9 +38,12 @@ CurrentLoadPercentage="$(echo "("$CurrentLoad"/"$MaxLoadServer")*100" | bc -l)"
 CurrentLoadPercentageRounded="$(printf "%.0f\n" $(echo "$CurrentLoadPercentage" | tr -d '%'))"
 
 # Gather current server memory usage
-CurrentMemoryUsage="$(free -m | awk '/^Mem/ {print $3}' | tr -d 'GKMT')"
-MaxMemoryServer="$(free -m | awk '/^Mem/ {print $2}' | tr -d 'GKMT')"
-CurrentMemoryPercentage="$(echo "("$CurrentMemoryUsage"/"$MaxMemoryServer")*100" | bc -l)"
+TotalMemory="$(free -m | awk '/^Mem/ {print $2}')"
+FreeMemory="$(free -m | awk '/^Mem/ {print $4}')"
+BuffersMemory="$(free -m | awk '/^Mem/ {print $6}')"
+CachedMemory="$(free -m | awk '/^Mem/ {print $7}')"
+UsedMemory="$(echo "("$TotalMemory"-"$FreeMemory"-"$BuffersMemory"-"$CachedMemory")" | bc -l)"
+CurrentMemoryPercentage="$(echo "("$UsedMemory"/"$TotalMemory")*100" | bc -l)"
 CurrentMemoryPercentageRounded="$(printf "%.0f\n" $(echo "$CurrentMemoryPercentage" | tr -d '%'))"
 
 # Gather current disk usage of /
