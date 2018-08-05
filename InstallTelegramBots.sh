@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.6.4-ALPHA (04-08-2018)
+# Version 0.7.0-ALPHA (05-08-2018)
 #############################################################################
 
 #############################################################################
@@ -54,6 +54,20 @@ Token_TelegramOutageBot='token'
 Chat_TelegramOutageBot='id'
 
 #############################################################################
+# INSTALL VARIABLES
+#############################################################################
+
+# These are needed for the script and bots. Only change them if you know 
+# what you are doing!
+
+# Source /etc/os-release to use variables
+. /etc/os-release
+
+# Put distro name and version in variables
+OperatingSystem="$NAME"
+OperatingSystemVersion="$VERSION_ID"
+
+#############################################################################
 # INTRODUCTION
 #############################################################################
 
@@ -85,37 +99,59 @@ echo
 echo "*** CHECKING REQUIREMENTS ***"
 
 # Checking whether the script runs as root
-echo -n "[1/3] Script is running as root..."
+echo -n "[?] Script is running as root..."
 if [ "$EUID" -ne 0 ]; then
     echo -e "\\t\\t\\t\\t[NO]"
     echo
-    echo "**********************************"
-	echo "This script should be run as root."
-	echo "**********************************"
+    echo "********************************************"
+	echo "This script should run with root privileges."
+	echo "********************************************"
     echo
 	exit 1
 fi
 echo -e "\\t\\t\\t\\t[YES]"
 
-# Checking whether Debian is installed
-echo -n "[2/3] Running Debian..."
-if [ -f /etc/debian_version ]; then
-    echo -e "\\t\\t\\t\\t\\t\\t[YES]"
+# Checking whether supported operating system is installed
+echo -n "[?] OS is supported..."
+if [ -f /etc/os-release ]; then
+
+    # Check all supported combinations of OS and version
+    if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 7" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 8" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 27" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 28" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 8" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 9" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 10" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 14.04" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 16.06" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.04" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.10" ]; then
+        echo -e "\\t\\t\\t\\t\\t\\t[YES]"
+
+    else
+        echo -e "\\t\\t\\t\\t\\t\\t[NO]"
+        echo
+        echo "***************************************"
+        echo "This operating system is not supported."
+        echo "***************************************"
+        echo
+        exit 1
+    fi
 
 else
     echo -e "\\t\\t\\t\\t\\t\\t[NO]"
     echo
-    echo "*************************************"
-    echo "This script will only work on Debian."
-    echo "*************************************"
+    echo "***************************************"
+    echo "This operating system is not supported."
+    echo "***************************************"
     echo
     exit 1
 fi
 
 # Checking internet connection
-echo -n "[3/3] Connected to the internet..."
-wget -q --tries=10 --timeout=20 --spider www.google.com
-if [[ $? -eq 0 ]]; then
+echo -n "[?] Connected to the internet..."
+if ping -q -c 1 -W 1 google.com >/dev/null; then
     echo -e "\\t\\t\\t\\t[YES]"
 
 else
@@ -132,15 +168,36 @@ fi
 # UPDATE OPERATING SYSTEM
 #############################################################################
 
-# Update the package list from the Debian repositories
 echo
 echo "*** UPDATING OPERATING SYSTEM ***"
-echo "[+] Downloading package list from repositories..."
-apt-get -qq update
+# Update CentOS 7
+if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 7" ]; then
+    echo "[+] Downloading packages from repositories and upgrade..."
+    yum -y -q update
+fi
 
-# Upgrade operating system with new package list
-echo "[+] Downloading and upgrading packages..."
-apt-get -y -qq upgrade
+# Update CentOS 8+ and Fedora
+if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 8" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Fedora 27" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Fedora 28" ]; then
+    echo "[+] Downloading packages from repositories and upgrade..."
+    dnf -y -q update
+fi
+
+# Update Debian and Ubuntu
+if [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 8" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 9" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 10" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 14.04" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 16.06" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.04" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.10" ]; then
+    echo "[+] Downloading package list from repositories..."
+    apt-get -qq update
+
+    echo "[+] Downloading and upgrading packages..."
+    apt-get -y -qq upgrade
+fi
 
 sleep 1
 
@@ -149,20 +206,36 @@ sleep 1
 #############################################################################
 
 # The following packages are needed for the bots to work.
-# - curl              Sends the bot content to the API
-# - aptitude          Provides the upgradable package list
+# - wget              Used for installation and updates
+# - curl              Used for sending the bot content to the Telegram API
+# - bc                Used for doing calculations in scripts
+# - aptitude          Provides the upgradable package list on Debian/Ubuntu
 
 echo
 echo "*** INSTALLING DEPENDENCIES ***"
 echo "[+] Installing dependencies..."
-apt-get -y -qq install curl
 
-if [ "$Install_TelegramUpdateBot" = 'yes' ]; then
-    apt-get -y -qq install aptitude
+# Install dependencies on CentOS 7
+if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 7" ]; then
+    yum -y -q install wget bc
 fi
 
-if [ "$Install_TelegramAlertBot" = 'yes' ]; then
-    apt-get -y -qq install bc
+# Install dependencies on CentOS 8+ and Fedora
+if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 8" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Fedora 27" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Fedora 28" ]; then
+    dnf -y -q install wget bc
+fi
+
+# Install dependencies on Debian and Ubuntu
+if [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 8" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 9" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 10" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 14.04" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 16.06" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.04" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.10" ]; then
+    apt-get -t -qq install aptitude bc curl
 fi
 
 #############################################################################
@@ -176,22 +249,6 @@ echo "*** CONFIGURATION ***"
 if [ ! -f /etc/TelegramBots/TelegramBots.conf ]; then
     echo "[+] No existing configuration found, creating new one..."
 
-#    # Create array with all install variables (work in progress)
-#    declare -a ArrayInstallBots=(
-#        '$TelegramMetricsBot'
-#        '$TelegramUpdateBot'
-#        '$TelegramLoginBot'
-#        '$TelegramAlertBot'
-#        '$TelegramOutageBot'
-#        )
-
-#    # Check if all tokens and id's are filled in for all bots that get installed
-#    for i in "${ArrayInstallBots[@]}" do
-#        if [ "$i" -eq "yes" ]; then
-#            if [ "$Token_$i"]
-#            echo "$i"
-#    done
-
     # Check whether the variables at the beginning of the script were used
     if [ "$Token_TelegramMetricsBot" != "token" ] && \
     [ "$Chat_TelegramMetricsBot" != "id" ] && \
@@ -203,7 +260,6 @@ if [ ! -f /etc/TelegramBots/TelegramBots.conf ]; then
     [ "$Chat_TelegramAlertBot" != "id" ] && \
     [ "$Token_TelegramOutageBot" != "token" ] && \
     [ "$Chat_TelegramOutageBot" != "id" ]; then
-
         echo "[+] Using provided access tokens..."
         echo "[+] Using provided chat IDs"
 
@@ -231,7 +287,12 @@ if [ ! -f /etc/TelegramBots/TelegramBots.conf ]; then
     echo "[+] Adding configuration file to system..."
     mkdir -m 755 /etc/TelegramBots
     wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/TelegramBots.conf -O /etc/TelegramBots/TelegramBots.conf
-    chmod 750 /etc/TelegramBots/TelegramBots.conf
+    chmod 640 /etc/TelegramBots/TelegramBots.conf
+
+    # Add operating system information
+    echo "[+] Adding system information..."
+    sed -i s/'operating_system_here'/"$OperatingSystem"/g /etc/TelegramBots/TelegramBots.conf
+    sed -i s/'operating_system_version_here'/"$OperatingSystemVersion"/g /etc/TelegramBots/TelegramBots.conf
     
     # Add access tokens and chat IDs
     echo "[+] Adding access token and chat ID to bots..."

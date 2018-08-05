@@ -12,9 +12,11 @@ TelegramBots is a collection of scripts that work well with a default Telegram b
 The bots are easily configurable from a single config file located in `/etc/TelegramBots/TelegramBots.conf`. After making changes to this file, simply use `TelegramBotsGenerateConfig` to effectuate the changes. You can use `TelegramBotsUpgrade` to update all bots to the newest version.
 
 # Compatibility
-The scripts/bots will at least be made compatible with the following distro's:
+The scripts/bots will at least be tested and compatible with the following distro's:
 
 * CentOS 7
+* Fedora 27
+* Fedora 28
 * Debian 8 Jessie
 * Debian 9 Stretch
 * Debian 10 Buster
@@ -23,15 +25,15 @@ The scripts/bots will at least be made compatible with the following distro's:
 * Ubuntu 18.04 Bionic Beaver
 * Ubuntu 18.10 Cosmic Cuttlefish
 
-In the future, more distro's will be supported. As of now the state is as follows:
+CentOS 6 is not compatible due to too many old linux core utilities the bots use. In the future, more distro's will probably be supported. As of now the state is as follows:
 
-| Bots | CentOS 7 | Debian 8 | Debian 9 | Debian 10 | Ubuntu |
+| Bots | Fedora 27-28 | CentOS 7 | Debian 8-10 | Ubuntu 14.04-18.10 |
 | --- | --- | --- | --- | --- | --- |
-| TelegramMetricsBot | YES | YES | YES | NOT TESTED | NOT TESTED |
-| TelegramUpdateBot | NO | YES | YES | NOT TESTED | NOT TESTED |
-| TelegramLoginBot | NOT TESTED | NOT TESTED | NOT TESTED | NOT TESTED | NOT TESTED |
-| TelegramAlertBot | NOT TESTED | YES | YES | NOT TESTED | NOT TESTED |
-| TelegramOutageBot | NOT TESTED | NOT TESTED | NOT TESTED | NOT TESTED | NOT TESTED |
+| TelegramMetricsBot | YES | YES | YES | NOT TESTED |
+| TelegramUpdateBot | NO | NO | YES | NOT TESTED |
+| TelegramLoginBot | NOT TESTED | NOT TESTED | NOT TESTED | NOT TESTED |
+| TelegramAlertBot | YES | YES | YES | YES |
+| TelegramOutageBot | NOT TESTED | NOT TESTED | YES | NOT TESTED |
 
 # Dependencies
 The scripts/bots mostly use standard stuff like `cat`, `print` and `free`. In addition they also need `bash`, `curl`, `wget`, `bc`.
@@ -69,4 +71,7 @@ I'm working on adding the following:
 
 * TelegramLoginBot that notifies when someone logs in on the server.
 * TelegramOutageBot that also checks TLS certificates, mailservers and other stuff
-* CentOS support.
+* Full Fedora, CentOS 7 and Ubuntu support.
+* Also show the percentage of memory usage in the TelegramMetricsBot.
+* Maybe merge the bots in to one? Would be less clear for people that want to read the code, but can be more user friendly (less different bots, more arguments to one bot).
+* 
