@@ -1,12 +1,11 @@
 # TelegramBots
-TelegramBots is a collection of scripts that work well with a default Telegram bot. As of now, there are five 'bots':
+TelegramBots is a collection of scripts that work well with a default Telegram bot. As of now, there are four bots:
 
 | Bot name | Description | Status |
 | --- | --- | --- |
 | TelegramMetricsBot | Sents metrics like load, ram and disk | Beta |
 | TelegramAlertBot | Sents alerts with predefined thresholds | Beta |
 | TelegramUpdateBot | Notifies when an update is available | Alpha |
-| TelegramLoginBot | Notifies when someone logs in to the server | Experimental |
 | TelegramOutageBot | Alerts when something is down | Experimental |
 
 The bots are easily configurable from a single config file located in `/etc/TelegramBots/TelegramBots.conf`. After making changes to this file, simply use `TelegramBotsGenerateConfig` to effectuate the changes. You can use `TelegramBotsUpgrade` to update all bots to the newest version.
@@ -25,31 +24,22 @@ The scripts/bots will at least be tested and compatible with the following distr
 * Ubuntu 18.04 Bionic Beaver
 * Ubuntu 18.10 Cosmic Cuttlefish
 
-CentOS 6 is not compatible due to too many old linux core utilities the bots use. In the future, more distro's will probably be supported. As of now the state is as follows:
+CentOS 6/Debian 7/Ubuntu 12.04 and below are not compatible due to their old linux core utilities. In the future, more distro's will probably be supported. As of now the state is as follows:
 
 | Bots | Fedora 27-28 | CentOS 7 | Debian 8-10 | Ubuntu 14.04-18.10 |
-| --- | --- | --- | --- | --- | --- |
-| TelegramMetricsBot | YES | YES | YES | NOT TESTED |
-| TelegramUpdateBot | NO | NO | YES | NOT TESTED |
-| TelegramLoginBot | NOT TESTED | NOT TESTED | NOT TESTED | NOT TESTED |
+| --- | --- | --- | --- | --- |
+| TelegramMetricsBot | YES | YES | YES | YES |
+| TelegramUpdateBot | YES | YES | YES | YES |
 | TelegramAlertBot | YES | YES | YES | YES |
-| TelegramOutageBot | NOT TESTED | NOT TESTED | YES | NOT TESTED |
+| TelegramOutageBot | YES | YES | YES | YES |
 
 # Dependencies
 The scripts/bots mostly use standard stuff like `cat`, `print` and `free`. In addition they also need `bash`, `curl`, `wget`, `bc`.
 
+# Examples
 Some examples of messages:
 
 ![Examples](https://raw.githubusercontent.com/sveeke/jumble/master/TelegramBots/TelegramBots.png)
-
-Since I mostly use Debian (with UK/US locale and bash), I created the bots without compatibilty with other operating systems in mind. They should also work on Debian derivatives like Ubuntu though.
-
-# Requirements
-* Telegram bot
-* Debian with bash and root access
-* Aptitude (TelegramUpdateBot)
-* bc (TelegramAlertBot)
-* curl (all bots)
 
 # Installation
 Installing the bots is really simple, just follow the below steps:

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.1.3-BETA (05-08-2018)
+# Version 0.1.4-BETA (05-08-2018)
 #############################################################################
 
 #############################################################################
@@ -20,7 +20,7 @@
 #############################################################################
 
 # Bot version
-TelegramAlertBotVersion='0.1.3'
+TelegramAlertBotVersion='0.1.4'
 
 # Source variables in TelegramBots.conf
 . /etc/TelegramBots/TelegramBots.conf
@@ -39,7 +39,7 @@ CurrentLoadPercentageRounded="$(printf "%.0f\n" $(echo "$CurrentLoadPercentage" 
 
 # Gather current server memory usage
 # Use older format in free when Debian 8 or Ubuntu 14.04 is used
-if [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 8" ] ||
+if [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 8" ] || \
 [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 14.04" ]; then
     TotalMemory="$(free -m | awk '/^Mem/ {print $2}')"
     FreeMemory="$(free -m | awk '/^Mem/ {print $4}')"
@@ -51,12 +51,14 @@ if [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 8" ] ||
 fi
 
 # Use newer format in free when CentOS 7+, Debian 9+ or Ubuntu 16.04+ is used
-if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 7" ] ||
-[ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 8" ] ||
-[ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 9" ] ||
-[ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 10" ] ||
-[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 16.04" ] ||
-[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.04" ] ||
+if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 7" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 8" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Fedora 27" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Fedora 28" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 9" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 10" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 16.04" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.04" ] || \
 [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.10" ]; then
     TotalMemory="$(free -m | awk '/^Mem/ {print $2}')"
     FreeMemory="$(free -m | awk '/^Mem/ {print $4}')"

@@ -54,20 +54,6 @@ Token_TelegramOutageBot='token'
 Chat_TelegramOutageBot='id'
 
 #############################################################################
-# INSTALL VARIABLES
-#############################################################################
-
-# These are needed for the script and bots. Only change them if you know 
-# what you are doing!
-
-# Source /etc/os-release to use variables
-. /etc/os-release
-
-# Put distro name and version in variables
-OperatingSystem="$NAME"
-OperatingSystemVersion="$VERSION_ID"
-
-#############################################################################
 # INTRODUCTION
 #############################################################################
 
@@ -113,7 +99,13 @@ echo -e "\\t\\t\\t\\t[YES]"
 
 # Checking whether supported operating system is installed
 echo -n "[?] OS is supported..."
+# Source /etc/os-release to use variables
 if [ -f /etc/os-release ]; then
+    . /etc/os-release
+
+    # Put distro name and version in variables
+    OperatingSystem="$NAME"
+    OperatingSystemVersion="$VERSION_ID"
 
     # Check all supported combinations of OS and version
     if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 7" ] || \
@@ -124,7 +116,7 @@ if [ -f /etc/os-release ]; then
     [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 9" ] || \
     [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 10" ] || \
     [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 14.04" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 16.06" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 16.04" ] || \
     [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.04" ] || \
     [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.10" ]; then
         echo -e "\\t\\t\\t\\t\\t\\t[YES]"
@@ -189,7 +181,7 @@ if [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 8" ] || \
 [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 9" ] || \
 [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 10" ] || \
 [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 14.04" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 16.06" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 16.04" ] || \
 [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.04" ] || \
 [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.10" ]; then
     echo "[+] Downloading package list from repositories..."
@@ -232,7 +224,7 @@ if [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 8" ] || \
 [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 9" ] || \
 [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 10" ] || \
 [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 14.04" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 16.06" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 16.04" ] || \
 [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.04" ] || \
 [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.10" ]; then
     apt-get -t -qq install aptitude bc curl

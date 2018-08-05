@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.3.2-ALPHA (08-07-2018)
+# Version 0.4.0-ALPHA (05-08-2018)
 #############################################################################
 
 #############################################################################
@@ -20,7 +20,7 @@
 #############################################################################
 
 # Bot version
-TelegramUpdateBotVersion='0.3.2'
+TelegramUpdateBotVersion='0.4.0'
 
 # Source variables in TelegramBots.conf
 . /etc/TelegramBots/TelegramBots.conf
@@ -31,12 +31,38 @@ TelegramUpdateBotVersion='0.3.2'
 
 # Update server, gather list with updates and length of update list
 GatherUpdates () {
-    # Update repository
-    apt-get -qq update
-    # List with available updates to variable AvailableUpdates
-    AvailableUpdates="$(aptitude -F "%p" search '~U')"
-    # Outputs the character length of AvailableUpdates in LengthUpdates
-    LengthUpdates="${#AvailableUpdates}"
+
+    if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 7" ]; then
+        # List with available updates to variable AvailableUpdates
+        AvailableUpdates="$(yum check-update | grep -v plugins | awk '(NR >=1) {print $1;}' | grep '^[[:alpha:]]' | sed 's/\<Loading\>//g')"
+        # Outputs the character length of AvailableUpdates in LengthUpdates
+        LengthUpdates="${#AvailableUpdates}"
+    fi
+
+    if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 8" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 27" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 28" ]; then
+        # List with available updates to variable AvailableUpdates
+        AvailableUpdates="$(dnf check-update | grep -v plugins | awk '(NR >=1) {print $1;}' | grep '^[[:alpha:]]' | sed 's/\<Loading\>//g')"
+        # Outputs the character length of AvailableUpdates in LengthUpdates
+        LengthUpdates="${#AvailableUpdates}"
+    fi
+
+    if [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 8" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 9" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 10" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 14.04" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 16.04" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.04" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.10" ]; then
+        # Update repository
+        apt-get -qq update
+        # List with available updates to variable AvailableUpdates
+        AvailableUpdates="$(aptitude -F "%p" search '~U')"
+        # Outputs the character length of AvailableUpdates in LengthUpdates
+        LengthUpdates="${#AvailableUpdates}"
+    fi
+  
 }
 
 #############################################################################
