@@ -335,7 +335,7 @@ chmod 700 /usr/local/bin/telegrambot
 #############################################################################
 
 # Creating or updating cronjobs
-/bin/bash "/usr/local/bin/telegrambot --config"
+/bin/bash /usr/local/bin/telegrambot --config
 
 #############################################################################
 # NOTICE
@@ -349,7 +349,7 @@ echo "#                                                                         
 echo "#   Just type 'telegrambot' with the desired function and method you want   #"
 echo "#   to use. You can change the default bot and script settings in           #"
 echo "#   /etc/telegrambot/telegrambot.conf. After changing the config, run       #"
-echo "#   'telegrambot --update' to effectuate the changes.                       #"
+echo "#   'telegrambot --config' to effectuate the changes.                       #"
 echo "#                                                                           #"
 echo "#   Run 'telegrambot --help' to help you get started                        #"
 echo "#                                                                           #"
