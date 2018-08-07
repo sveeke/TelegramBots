@@ -10,7 +10,7 @@ There are four different functions:
 | Updates | Notifies when a update is available |
 | Outage | Alerts when something is down |
 
-telegrambot can be invoked from the command line, or can be configured to use cron. telegrambot and its cron settings are easily configurable from a single config file located in `/etc/telegrambot/telegrambot.conf`. After making changes to this file, simply run `telegrambot --update` to effectuate the changes. You can use `telegrambot --upgrade` to update telegrambot to the newest version.
+telegrambot can be invoked from the command line, or can be configured to use cron. telegrambot and its cron settings are easily configurable from a single config file located in `/etc/telegrambot/telegrambot.conf`. After making changes to this file, simply run `telegrambot --config` to effectuate the changes. You can use `telegrambot --upgrade` to update telegrambot to the newest version.
 
 # How to use?
 That's actually quite easy. Just run the telegrambot with the function and the desired method. As of now there are two supported methods: cli and telegram.

@@ -138,19 +138,19 @@ function ManagementConfiguration {
     fi
 
     # Update metrics cronjob if activated
-    if [ "$MetricsActivated" = 'yes' ]; then
+    if [ "$MetricsActivate" = 'yes' ]; then
         echo "[+] Updating metrics cronjob"
         echo -e "# This cronjob activates the metrics on Telegram on the chosen schedule\n\n${MetricsCron} root /usr/local/bin/telegrambot --metrics --telegram" > /etc/cron.d/telegrambot_metrics
     fi
 
     # Update alert cronjob if activated
-    if [ "$AlertActivated" = 'yes' ]; then
+    if [ "$AlertActivate" = 'yes' ]; then
         echo "[+] Updating alert cronjob"
         echo -e "# This cronjob activates alerts on Telegram on the chosen schedule\n\n${AlertCron} root /usr/local/bin/telegrambot --alert --telegram" > /etc/cron.d/telegrambot_alert
     fi
 
     # Update updates cronjob if activated
-    if [ "$UpdatesActivated" = 'yes' ]; then
+    if [ "$UpdatesActivate" = 'yes' ]; then
         echo "[+] Updating updates cronjob"
         echo -e "# This cronjob activates updates messages on Telegram on the the chosen schedule\n\n${UpdatesCron} root /usr/local/bin/telegrambot --updates --telegram" > /etc/cron.d/telegrambot_updates
     fi
@@ -163,7 +163,7 @@ function ManagementConfiguration {
     #fi
 
     # Update outage cronjob if activated
-    if [ "$OutageActivated" = 'yes' ]; then
+    if [ "$OutageActivate" = 'yes' ]; then
         echo "[+] Updating outage cronjob"
         echo -e "# This cronjob activates the outage warnings on Telegram on the chosen schedule\n\n${OutageCron} root /usr/local/bin/telegrambot --outage --telegram" > /etc/cron.d/telegrambot_outage
     fi

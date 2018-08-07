@@ -227,7 +227,7 @@ if [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 8" ] || \
 [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 16.04" ] || \
 [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.04" ] || \
 [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.10" ]; then
-    apt-get -t -qq install aptitude bc curl
+    apt-get -y -qq install aptitude bc curl
 fi
 
 #############################################################################
@@ -283,27 +283,27 @@ if [ ! -f /etc/telegrambot/telegrambot.conf ]; then
 
     # Add operating system information
     echo "[+] Adding system information..."
-    sed -i s/'operating_system_here'/"$OperatingSystem"/g /etc/telegrambot/telegrambot.conf
-    sed -i s/'operating_system_version_here'/"$OperatingSystemVersion"/g /etc/telegrambot/telegrambot.conf
+    sed -i s%'operating_system_here'%"$OperatingSystem"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'operating_system_version_here'%"$OperatingSystemVersion"%g /etc/telegrambot/telegrambot.conf
     
     # Add access tokens and chat IDs
     echo "[+] Adding access token and chat ID to bots..."
-    sed -i s/'auto_update_here'/"$AutoUpgrade"/g /etc/telegrambot/telegrambot.conf
-    sed -i s/'metrics_activate_here'/"$MetricsActivate"/g /etc/telegrambot/telegrambot.conf
-    sed -i s/'metrics_token_here'/"$MetricsToken"/g /etc/telegrambot/telegrambot.conf
-    sed -i s/'metrics_id_here'/"$MetricsChat"/g /etc/telegrambot/telegrambot.conf
-    sed -i s/'alert_activate_here'/"$AlertActivate"/g /etc/telegrambot/telegrambot.conf
-    sed -i s/'alert_token_here'/"$AlertToken"/g /etc/telegrambot/telegrambot.conf
-    sed -i s/'alert_id_here'/"$AlertChat"/g /etc/telegrambot/telegrambot.conf
-    sed -i s/'updates_activate_here'/"$UpdatesActivate"/g /etc/telegrambot/telegrambot.conf
-    sed -i s/'updates_token_here'/"$UpdatesToken"/g /etc/telegrambot/telegrambot.conf
-    sed -i s/'updates_id_here'/"$UpdatesChat"/g /etc/telegrambot/telegrambot.conf
-    sed -i s/'login_activate_here'/"$LoginActivate"/g /etc/telegrambot/telegrambot.conf
-    sed -i s/'login_token_here'/"$LoginToken"/g /etc/telegrambot/telegrambot.conf
-    sed -i s/'login_id_here'/"$LoginChat"/g /etc/telegrambot/telegrambot.conf
-    sed -i s/'outage_activate_here'/"$OutageActivate"/g /etc/telegrambot/telegrambot.conf
-    sed -i s/'outage_token_here'/"$OutageToken"/g /etc/telegrambot/telegrambot.conf
-    sed -i s/'outage_id_here'/"$OutageChat"/g /etc/telegrambot/telegrambot.conf
+    sed -i s%'auto_upgrade_here'%"$AutoUpgrade"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'metrics_activate_here'%"$MetricsActivate"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'metrics_token_here'%"$MetricsToken"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'metrics_id_here'%"$MetricsChat"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'alert_activate_here'%"$AlertActivate"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'alert_token_here'%"$AlertToken"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'alert_id_here'%"$AlertChat"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'updates_activate_here'%"$UpdatesActivate"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'updates_token_here'%"$UpdatesToken"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'updates_id_here'%"$UpdatesChat"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'login_activate_here'%"$LoginActivate"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'login_token_here'%"$LoginToken"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'login_id_here'%"$LoginChat"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'outage_activate_here'%"$OutageActivate"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'outage_token_here'%"$OutageToken"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'outage_id_here'%"$OutageChat"%g /etc/telegrambot/telegrambot.conf
 
 else
     # Notify user that all configuration steps will be skipped
@@ -327,7 +327,7 @@ echo "*** INSTALLING BOTS & SCRIPTS ***"
 
 # Install newest version telegrambot
 echo "[+] Installing telegrambot"
-wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/telegrambot.sh -O /usr/local/bin/telegrambot.sh
+wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/telegrambot.sh -O /usr/local/bin/telegrambot
 chmod 700 /usr/local/bin/telegrambot
 
 #############################################################################
@@ -335,7 +335,7 @@ chmod 700 /usr/local/bin/telegrambot
 #############################################################################
 
 # Creating or updating cronjobs
-/bin/bash "/usr/local/bin/telegrambot --update"
+/bin/bash "/usr/local/bin/telegrambot --config"
 
 #############################################################################
 # NOTICE
