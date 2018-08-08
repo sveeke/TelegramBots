@@ -70,8 +70,10 @@ root@server:~# telegrambot --alert --cli
 telegrambot will at least be tested and compatible with the following distro's:
 
 * CentOS 7
+* CentOS 8
 * Fedora 27
 * Fedora 28
+* Fedora 29
 * Debian 8 Jessie
 * Debian 9 Stretch
 * Debian 10 Buster

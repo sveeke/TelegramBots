@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.1.0-ALPHA (07-08-2018)
+# Version 0.1.3-ALPHA (08-08-2018)
 #############################################################################
 
 #############################################################################
@@ -16,19 +16,11 @@
 #############################################################################
 
 #############################################################################
-# NOTICE FOR READERS
-#############################################################################
-
-# How nice of you that you look in the source code of this bot.
-# bla bla
-# bla bla
-
-#############################################################################
 # VARIABLES
 #############################################################################
 
 # Bot version
-TelegrambotVersion='0.1.0'
+TelegrambotVersion='0.1.2'
 
 # Source variables in telegrambot.conf
 . /etc/telegrambot/telegrambot.conf
@@ -41,7 +33,6 @@ TelegrambotVersion='0.1.0'
 while test -n "$1"; do
     case "$1" in
         --version|-version|version|--v|-v)
-            echo
             echo "TelegramAlertBot $TelegrambotVersion"
             echo "Copyright (C) 2018 Nozel."
             echo
@@ -207,7 +198,6 @@ function GatherMetrics {
     ThresholdMemoryNumber="$(echo "$ThresholdMemory" | tr -d '%')"
     ThresholdDiskNumber="$(echo "$ThresholdDisk" | tr -d '%')"
 
-
     # CPU and load metrics
     CoreAmount="$(grep 'cpu cores' /proc/cpuinfo | wc -l)"
     MaxLoadServer="$CoreAmount.00"
@@ -234,6 +224,7 @@ function GatherMetrics {
     [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 8" ] || \
     [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 27" ] || \
     [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 28" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 29" ] || \
     [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 9" ] || \
     [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 10" ] || \
     [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 16.04" ] || \
@@ -264,7 +255,9 @@ function GatherUpdates {
 
     if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 8" ] || \
     [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 27" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 28" ]; then
+    [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 28" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 29" ]; then
+
         # List with available updates to variable AvailableUpdates
         AvailableUpdates="$(dnf check-update | grep -v plugins | awk '(NR >=1) {print $1;}' | grep '^[[:alpha:]]' | sed 's/\<Loading\>//g')"
         # Outputs the character length of AvailableUpdates in LengthUpdates
@@ -288,7 +281,7 @@ function GatherUpdates {
 }
 
 #############################################################################
-# Update config
+# UPDATE CONFIG
 #############################################################################
 
 if [ "$ArgumentConfiguration" == "1" ]; then
@@ -297,7 +290,7 @@ if [ "$ArgumentConfiguration" == "1" ]; then
 fi
 
 #############################################################################
-# Upgrade telegrambot
+# UPGRADE TELEGRAMBOT
 #############################################################################
 
 if [ "$ArgumentUpgrade" == "1" ]; then
@@ -306,7 +299,7 @@ if [ "$ArgumentUpgrade" == "1" ]; then
 fi
 
 #############################################################################
-# Metrics bot
+# FUNCTION METRICS
 #############################################################################
 
 # Method CLI
@@ -345,7 +338,7 @@ if [ "$ArgumentMetrics" == "1" ] && [ "$ArgumentTelegram" == "1" ]; then
 fi
 
 #############################################################################
-# Alert bot
+# FUNCTION ALERT
 #############################################################################
 
 # Method CLI
@@ -428,7 +421,7 @@ if [ "$ArgumentAlert" == "1" ] && [ "$ArgumentTelegram" == "1" ]; then
 fi
 
 #############################################################################
-# Updates bot
+# FUNCTION UPDATES
 #############################################################################
 
 # Method CLI
@@ -461,7 +454,6 @@ if [ "$ArgumentUpdates" == "1" ] && [ "$ArgumentTelegram" == "1" ]; then
     GatherServerInformation
     GatherUpdates
 
-            UpdatesMessage="hoi"        
         # Create updates payload to sent to telegram API
         UpdatesPayload="chat_id=${UpdatesChat}&text=$(echo -e "${UpdatesMessage}")&parse_mode=Markdown&disable_web_page_preview=true"
 
@@ -482,7 +474,6 @@ if [ "$ArgumentUpdates" == "1" ] && [ "$ArgumentTelegram" == "1" ]; then
             UpdatesMessage="There are updates available on *${Hostname}*. Unfortunately, the list with updates is too large for Telegram. Please update your server as soon as possible."
         fi
 
-        UpdatesMessage="hoi"        
         # Create updates payload to sent to telegram API
         UpdatesPayload="chat_id=${UpdatesChat}&text=$(echo -e "${UpdatesMessage}")&parse_mode=Markdown&disable_web_page_preview=true"
 
@@ -491,3 +482,35 @@ if [ "$ArgumentUpdates" == "1" ] && [ "$ArgumentTelegram" == "1" ]; then
     fi
 exit 0
 fi
+
+#############################################################################
+# FUNCTION LOGIN
+#############################################################################
+
+# Method CLI
+if [ "$ArgumentLogin" == "1" ] && [ "$ArgumentCli" == "1" ]; then
+    echo "Oops! This function has not been implemented yet!"
+    exit 0
+fi
+
+if [ "$ArgumentLogin" == "1" ] && [ "$ArgumentTelegram" == "1" ]; then
+    echo "Oops! This function has not been implemented yet!"
+    exit 0
+fi
+
+#############################################################################
+# FUNCTION OUTAGE
+#############################################################################
+
+# Method CLI
+if [ "$ArgumentOutage" == "1" ] && [ "$ArgumentCli" == "1" ]; then
+    echo "Oops! This function has not been implemented yet!"
+    exit 0
+fi
+
+if [ "$ArgumentOutage" == "1" ] && [ "$ArgumentTelegram" == "1" ]; then
+    echo "Oops! This function has not been implemented yet!"
+    exit 0
+fi
+
+

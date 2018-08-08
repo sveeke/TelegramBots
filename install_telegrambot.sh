@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.8.0-ALPHA (07-08-2018)
+# Version 0.8.3-ALPHA (08-08-2018)
 #############################################################################
 
 #############################################################################
@@ -44,7 +44,7 @@ UpdatesToken='token'
 UpdatesChat='id'
 
 # Login function
-LoginActivate='no' # Default 'yes'
+LoginActivate='no' # Default 'no'
 LoginToken='token'
 LoginChat='id'
 
@@ -60,19 +60,19 @@ OutageChat='id'
 echo
 echo
 echo
-echo '         _______   _                                ____        _       '
-echo '        |__   __| | |     Created by S. Veeke      |  _ \      | |      '
-echo '           | | ___| | ___  __ _ _ __ __ _ _ __ ___ | |_) | ___ | |_ ___ '
-echo '           | |/ _ \ |/ _ \/ _` | `__/ _` | `_ ` _ \|  _ < / _ \| __/ __|'
-echo '           | |  __/ |  __/ (_| | | | (_| | | | | | | |_) | (_) | |_\__ \'
-echo '           |_|\___|_|\___|\__, |_|  \__,_|_| |_| |_|____/ \___/ \__|___/'
-echo '                           __/ |                                        '
-echo '                          |___/                                         '
+echo '   _______   _                                _           _   '
+echo '  |__   __| | |    Created by Sebas Veeke    | |         | |  '
+echo '     | | ___| | ___  __ _ _ __ __ _ _ __ ___ | |__   ___ | |_ '
+echo '     | |/ _ \ |/ _ \/ _` |  __/ _` |  _ ` _ \|  _ \ / _ \| __|'
+echo '     | |  __/ |  __/ (_| | | | (_| | | | | | | |_) | (_) | |_ '
+echo '     |_|\___|_|\___|\__, |_|  \__,_|_| |_| |_|_.__/ \___/ \__|'
+echo '                     __/ |                                    '
+echo '                    |___/                                     '
 echo
-echo '         This script will install telegrambot on your server. You need'
-echo '         the access token and chat ID during the installation.'
+echo '  This script will install telegrambot on your server. You need'
+echo '  the Telegram access token and chat ID during the installation.'
 echo
-echo '         Press ctrl + c during the installation to abort.'
+echo '  Press ctrl + c during the installation to abort.'
 
 sleep 3
 
@@ -112,6 +112,7 @@ if [ -f /etc/os-release ]; then
     [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 8" ] || \
     [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 27" ] || \
     [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 28" ] || \
+    [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 29" ] || \
     [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 8" ] || \
     [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 9" ] || \
     [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 10" ] || \
@@ -171,7 +172,8 @@ fi
 # Update CentOS 8+ and Fedora
 if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 8" ] || \
 [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 27" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Fedora 28" ]; then
+[ "$OperatingSystem $OperatingSystemVersion" == "Fedora 28" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Fedora 29" ]; then
     echo "[+] Downloading packages from repositories and upgrade..."
     dnf -y -q update
 fi
@@ -215,7 +217,8 @@ fi
 # Install dependencies on CentOS 8+ and Fedora
 if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 8" ] || \
 [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 27" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Fedora 28" ]; then
+[ "$OperatingSystem $OperatingSystemVersion" == "Fedora 28" ] || \
+[ "$OperatingSystem $OperatingSystemVersion" == "Fedora 29" ]; then
     dnf -y -q install wget bc
 fi
 
