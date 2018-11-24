@@ -91,7 +91,7 @@ CentOS 6/Debian 7/Ubuntu 12.04 and below are not compatible due to their old lin
 | Updates | ALPHA | ALPHA | BETA | BETA |
 | Outage | ALPHA | ALPHA | ALPHA | ALPHA |
 
-The first stable release (version 1.0) will probably be somewhere in september 2018. [Semantic Versioning 2.0.0](https://semver.org/) is being used for versioning this project.
+The first stable release (version 1.0) will probably be somewhere early 2019. [Semantic Versioning 2.0.0](https://semver.org/) is being used for versioning this project.
 
 # Installation
 ## Dependencies
@@ -117,4 +117,4 @@ I'm working on adding the following:
 
 * Login function that notifies when someone logs in to the server.
 * Adding more functionality to the Outage function so that is also checks TLS certificates, mailservers and other stuff
-* Full Fedora, CentOS 7 and Ubuntu support.
+* Full Fedora, CentOS 7, CentOS 8 and Ubuntu support.
