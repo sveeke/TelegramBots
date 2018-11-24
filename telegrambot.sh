@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.1.3-ALPHA (08-08-2018)
+# Version 0.1.4-ALPHA (24-11-2018)
 #############################################################################
 
 #############################################################################
@@ -19,21 +19,21 @@
 # VARIABLES
 #############################################################################
 
-# Bot version
-TelegrambotVersion='0.1.2'
+# telegrambot version
+VERSION='0.1.4'
 
-# Source variables in telegrambot.conf
-. /etc/telegrambot/telegrambot.conf
+# source variables in telegrambot.conf
+source /etc/telegrambot/telegrambot.conf
 
 #############################################################################
 # ARGUMENTS
 #############################################################################
 
-# Enable help, version and a cli option
+# enable help, version and a cli option
 while test -n "$1"; do
     case "$1" in
         --version|-version|version|--v|-v)
-            echo "TelegramAlertBot $TelegrambotVersion"
+            echo "TelegramAlertBot ${VERSION}"
             echo "Copyright (C) 2018 Nozel."
             echo
             echo "License CC Attribution-NonCommercial-ShareAlike 4.0 Int."
@@ -67,42 +67,42 @@ while test -n "$1"; do
             ;;
 
         --config|--configuration|-config|-configuration|config|configuration)
-            ArgumentConfiguration="1"
+            ARGUMENT_CONFIGURATION="1"
             shift
             ;;
 
         --upgrade|-upgrade|upgrade)
-            ArgumentUpgrade="1"
+            ARGUMENT_UPGRADE="1"
             shift
             ;;
 
         --metrics|-metrics|metrics|--m|-m)
-            ArgumentMetrics="1"
+            ARGUMENT_METRICS="1"
             shift
             ;;
 
         --alert|-alert|alert|--a|-a)
-            ArgumentAlert="1"
+            ARGUMENT_ALERT="1"
             shift
             ;;
 
         --updates|-updates|updates|--u|-u)
-            ArgumentUpdates="1"
+            ARGUMENT_UPDATES="1"
             shift
             ;;
 
         --outage|-outage|outage|--o|-o)
-            ArgumentOutage="1"
+            ARGUMENT_OUTAGE="1"
             shift
             ;;
 
         --cli|-cli|cli|--c|-c)
-            ArgumentCli="1"
+            ARGUMENT_CLI="1"
             shift
             ;;
 
         --telegram|-telegram|telegram|--t|-t)
-            ArgumentTelegram="1"
+            ARGUMENT_TELEGRAM="1"
             shift
             ;;
     esac
@@ -112,54 +112,55 @@ done
 # MANAGEMENT FUNCTIONS
 #############################################################################
 
-function ManagementConfiguration {
+function management_configuration {
 
     echo
     echo "*** UPDATING CRONJOBS ***"
     echo
 
-    # Source telegrambot.conf
+    # source telegrambot.conf
     echo "[+] Reading telegrambot.conf..."
-    . /etc/telegrambot/telegrambot.conf
+    source /etc/telegrambot/telegrambot.conf
 
-    # Update cronjob for AutoUpgrade if activated
-    if [ "$AutoUpgrade" = 'yes' ]; then
+    # update cronjob for AutoUpgrade if activated
+    if [ "$AUTO_UPGRADE" = 'yes' ]; then
         echo "[+] Updating cronjob for automatic upgrade"
-        echo -e "# This cronjob activates automatic upgrade of Telegrambot on the chosen schedule\n\n${AutoUpgradeCron} root /usr/local/bin/telegrambot --upgrade" > /etc/cron.d/telegrambot_auto_upgrade
+        echo -e "# This cronjob activates automatic upgrade of Telegrambot on the chosen schedule\n\n${AUTO_UPGRADE_CRON} root /usr/local/bin/telegrambot --upgrade" > /etc/cron.d/telegrambot_auto_upgrade
     fi
 
-    # Update metrics cronjob if activated
-    if [ "$MetricsActivate" = 'yes' ]; then
+    # update metrics cronjob if activated
+    if [ "$METRICS_ENABLED" = 'yes' ]; then
         echo "[+] Updating metrics cronjob"
-        echo -e "# This cronjob activates the metrics on Telegram on the chosen schedule\n\n${MetricsCron} root /usr/local/bin/telegrambot --metrics --telegram" > /etc/cron.d/telegrambot_metrics
+        echo -e "# This cronjob activates the metrics on Telegram on the chosen schedule\n\n${METRICS_CRON} root /usr/local/bin/telegrambot --metrics --telegram" > /etc/cron.d/telegrambot_metrics
     fi
 
-    # Update alert cronjob if activated
-    if [ "$AlertActivate" = 'yes' ]; then
+    # update alert cronjob if activated
+    if [ "$ALERT_ENABLED" = 'yes' ]; then
         echo "[+] Updating alert cronjob"
-        echo -e "# This cronjob activates alerts on Telegram on the chosen schedule\n\n${AlertCron} root /usr/local/bin/telegrambot --alert --telegram" > /etc/cron.d/telegrambot_alert
+        echo -e "# This cronjob activates alerts on Telegram on the chosen schedule\n\n${ALERT_CRON} root /usr/local/bin/telegrambot --alert --telegram" > /etc/cron.d/telegrambot_alert
     fi
 
-    # Update updates cronjob if activated
-    if [ "$UpdatesActivate" = 'yes' ]; then
+    # update updates cronjob if activated
+    if [ "$UPDATES_ENABLED" = 'yes' ]; then
         echo "[+] Updating updates cronjob"
-        echo -e "# This cronjob activates updates messages on Telegram on the the chosen schedule\n\n${UpdatesCron} root /usr/local/bin/telegrambot --updates --telegram" > /etc/cron.d/telegrambot_updates
+        echo -e "# This cronjob activates updates messages on Telegram on the the chosen schedule\n\n${UPDATES_CRON} root /usr/local/bin/telegrambot --updates --telegram" > /etc/cron.d/telegrambot_updates
     fi
 
-    # A cronjob for the login function is probably not relevant. Can be removed after the login functionality has been thought out.
-    # Update login cronjob if activated
-    #if [ "$LoginActivated" = 'yes' ]; then
+    # work in progress
+    # a cronjob for the login function is probably not relevant. can be removed after the login functionality has been thought out.
+    # update login cronjob if activated
+    #if [ "$LOGIN_ENABLED" = 'yes' ]; then
     #    echo "[+] Updating login cronjob"
-    #    echo -e "# This cronjob activates login notices on telegram on the chosen schedule\n\n${LoginCron} root /usr/local/bin/telegrambot --login --telegram" > /etc/cron.d/telegrambot_login
+    #    echo -e "# This cronjob activates login notices on telegram on the chosen schedule\n\n${LOGIN_CRON} root /usr/local/bin/telegrambot --login --telegram" > /etc/cron.d/telegrambot_login
     #fi
 
-    # Update outage cronjob if activated
-    if [ "$OutageActivate" = 'yes' ]; then
+    # update outage cronjob if activated
+    if [ "$OUTAGE_ENABLED" = 'yes' ]; then
         echo "[+] Updating outage cronjob"
-        echo -e "# This cronjob activates the outage warnings on Telegram on the chosen schedule\n\n${OutageCron} root /usr/local/bin/telegrambot --outage --telegram" > /etc/cron.d/telegrambot_outage
+        echo -e "# This cronjob activates the outage warnings on Telegram on the chosen schedule\n\n${OUTAGE_CRON} root /usr/local/bin/telegrambot --outage --telegram" > /etc/cron.d/telegrambot_outage
     fi
 
-    # Restart cron
+    # restart cron
     echo
     echo "[+] Restarting the cron service..."
     systemctl restart cron
@@ -168,15 +169,15 @@ function ManagementConfiguration {
     exit 0
 }
 
-function ManagementUpgrade {
+function management_upgrade {
 
-    # Get most recent install script
+    # get most recent install script
     wget -q https://raw.githubusercontent.com/sveeke/TelegramBots/master/install_telegrambot.sh -O /etc/telegrambot/install_telegrambot.sh
 
-    # Set permissions on install script
+    # set permissions on install script
     chmod 700 /etc/telegrambot/install_telegrambot.sh
 
-    # Execute install script
+    # execute install script
     /bin/bash /etc/telegrambot/install_telegrambot.sh
 }
 
@@ -184,99 +185,99 @@ function ManagementUpgrade {
 # GATHER FUNCTIONS
 #############################################################################
 
-function GatherServerInformation {
+function gather_server_information {
 
-    # Server information
-    Hostname="$(uname -n)"
-    Uptime="$(uptime -p)"
+    # server information
+    HOSTNAME="$(uname -n)"
+    UPTIME="$(uptime -p)"
 }
 
-function GatherMetrics {
+function gather_metrics {
 
-    # Strip '%' of thresholds in Telegrambot.conf
-    ThresholdLoadNumber="$(echo "$ThresholdLoad" | tr -d '%')"
-    ThresholdMemoryNumber="$(echo "$ThresholdMemory" | tr -d '%')"
-    ThresholdDiskNumber="$(echo "$ThresholdDisk" | tr -d '%')"
+    # strip '%' of thresholds in Telegrambot.conf
+    THRESHOLD_LOAD_NUMBER="$(echo "${THRESHOLD_LOAD}" | tr -d '%')"
+    THRESHOLD_MEMORY_NUMBER="$(echo "${THRESHOLD_MEMORY}" | tr -d '%')"
+    THRESHOLD_DISK_NUMBER="$(echo "${THRESHOLD_DISK}" | tr -d '%')"
 
-    # CPU and load metrics
-    CoreAmount="$(grep 'cpu cores' /proc/cpuinfo | wc -l)"
-    MaxLoadServer="$CoreAmount.00"
-    CompleteLoad="$(cat /proc/loadavg | awk '{print $1" "$2" "$3}')"
-    CurrentLoad="$(cat /proc/loadavg | awk '{print $3}')"
-    CurrentLoadPercentage="$(echo "("$CurrentLoad"/"$MaxLoadServer")*100" | bc -l)"
-    CurrentLoadPercentageRounded="$(printf "%.0f\n" $(echo "$CurrentLoadPercentage" | tr -d '%'))"
+    # cpu and load metrics
+    CORE_AMOUNT="$(grep -c 'cpu cores' /proc/cpuinfo)"
+    MAX_LOAD_SERVER="${CORE_AMOUNT}.00"
+    COMPLETE_LOAD="$(< /proc/loadavg awk '{print $1" "$2" "$3}')"
+    CURRENT_LOAD="$(< /proc/loadavg awk '{print $3}')"
+    CURRENT_LOAD_PERCENTAGE="$(echo "(${CURRENT_LOAD}/${MAX_LOAD_SERVER})*100" | bc -l)"
+    CURRENT_LOAD_PERCENTAGE_ROUNDED="$(printf "%.0f\n" $(echo ${CURRENT_LOAD_PERCENTAGE} | tr -d '%'))"
 
-    # Memory metrics
-    # Use older format in free when Debian 8 or Ubuntu 14.04 is used
-    if [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 8" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 14.04" ]; then
-        TotalMemory="$(free -m | awk '/^Mem/ {print $2}')"
-        FreeMemory="$(free -m | awk '/^Mem/ {print $4}')"
-        BuffersMemory="$(free -m | awk '/^Mem/ {print $6}')"
-        CachedMemory="$(free -m | awk '/^Mem/ {print $7}')"
-        UsedMemory="$(echo "("$TotalMemory"-"$FreeMemory"-"$BuffersMemory"-"$CachedMemory")" | bc -l)"
-        CurrentMemoryPercentage="$(echo "("$UsedMemory"/"$TotalMemory")*100" | bc -l)"
-        CurrentMemoryPercentageRounded="$(printf "%.0f\n" $(echo "$CurrentMemoryPercentage" | tr -d '%'))"
+    # memory metrics
+    # use older format in free when Debian 8 or Ubuntu 14.04 is used
+    if [ "${OPERATING_SYSTEM} ${OPERATING_SYSTEM_VERSION}" == "Debian GNU/Linux 8" ] || \
+    [ "${OPERATING_SYSTEM} ${OPERATING_SYSTEM_VERSION}" == "Ubuntu 14.04" ]; then
+        TOTAL_MEMORY="$(free -m | awk '/^Mem/ {print $2}')"
+        FREE_MEMORY="$(free -m | awk '/^Mem/ {print $4}')"
+        BUFFERS_MEMORY="$(free -m | awk '/^Mem/ {print $6}')"
+        CACHED_MEMORY="$(free -m | awk '/^Mem/ {print $7}')"
+        USED_MEMORY="$(echo "(${TOTAL_MEMORY}-${FREE_MEMORY}-${BUFFERS_MEMORY}-${CACHED_MEMORY})" | bc -l)"
+        CURRENT_MEMORY_PERCENTAGE="$(echo "(${USED_MEMORY}/${TOTAL_MEMORY})*100" | bc -l)"
+        CURRENT_MEMORY_PERCENTAGE_ROUNDED="$(printf "%.0f\n" $(echo ${CURRENT_MEMORY_PERCENTAGE} | tr -d '%'))"
     fi
 
-    # Use newer format in free when CentOS 7+, Debian 9+ or Ubuntu 16.04+ is used
-    if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 7" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 8" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 27" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 28" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 29" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 9" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 10" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 16.04" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.04" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.10" ]; then
-        TotalMemory="$(free -m | awk '/^Mem/ {print $2}')"
-        FreeMemory="$(free -m | awk '/^Mem/ {print $4}')"
-        BuffersCachedMemory="$(free -m | awk '/^Mem/ {print $6}')"
-        UsedMemory="$(echo "("$TotalMemory"-"$FreeMemory"-"$BuffersCachedMemory")" | bc -l)"
-        CurrentMemoryPercentage="$(echo "("$UsedMemory"/"$TotalMemory")*100" | bc -l)"
-        CurrentMemoryPercentageRounded="$(printf "%.0f\n" $(echo "$CurrentMemoryPercentage" | tr -d '%'))"
+    # use newer format in free when CentOS 7+, Debian 9+ or Ubuntu 16.04+ is used
+    if [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "CentOS Linux 7" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "CentOS Linux 8" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Fedora 27" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Fedora 28" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Fedora 29" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Debian GNU/Linux 9" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Debian GNU/Linux 10" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Ubuntu 16.04" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Ubuntu 18.04" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Ubuntu 18.10" ]; then
+        TOTAL_MEMORY="$(free -m | awk '/^Mem/ {print $2}')"
+        FREE_MEMORY="$(free -m | awk '/^Mem/ {print $4}')"
+        BUFFERS_CACHED_MEMORY="$(free -m | awk '/^Mem/ {print $6}')"
+        USED_MEMORY="$(echo "("$TOTAL_MEMORY"-"$FREE_MEMORY"-"$BUFFERS_CACHED_MEMORY")" | bc -l)"
+        CURRENT_MEMORY_PERCENTAGE="$(echo "("$USED_MEMORY"/"$TOTAL_MEMORY")*100" | bc -l)"
+        CURRENT_MEMORY_PERCENTAGE_ROUNDED="$(printf "%.0f\n" $(echo "$CURRENT_MEMORY_PERCENTAGE" | tr -d '%'))"
     fi
 
-    # File system metrics
-    TotalDiskSize="$(df -h / --output=size -x tmpfs -x devtmpfs | tr -dc '1234567890GKMT.')"
-    CurrentDiskUsage="$(df -h / --output=used -x tmpfs -x devtmpfs | tr -dc '1234567890GKMT.')"
-    CurrentDiskPercentage="$(df / --output=pcent -x tmpfs -x devtmpfs | tr -dc '0-9')"
+    # file system metrics
+    TOTAL_DISK_SIZE="$(df -h / --output=size -x tmpfs -x devtmpfs | tr -dc '1234567890GKMT.')"
+    CURRENT_DISK_USAGE="$(df -h / --output=used -x tmpfs -x devtmpfs | tr -dc '1234567890GKMT.')"
+    CURRENT_DISK_PERCENTAGE="$(df / --output=pcent -x tmpfs -x devtmpfs | tr -dc '0-9')"
 }
 
-function GatherUpdates {
+function gather_updates {
 
-    if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 7" ]; then
-        # List with available updates to variable AvailableUpdates
-        AvailableUpdates="$(yum check-update | grep -v plugins | awk '(NR >=1) {print $1;}' | grep '^[[:alpha:]]' | sed 's/\<Loading\>//g')"
-        # Outputs the character length of AvailableUpdates in LengthUpdates
-        LengthUpdates="${#AvailableUpdates}"
+    if [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "CentOS Linux 7" ]; then
+        # list with available updates to variable AVAILABLE_UPDATES
+        AVAILABLE_UPDATES="$(yum check-update | grep -v plugins | awk '(NR >=1) {print $1;}' | grep '^[[:alpha:]]' | sed 's/\<Loading\>//g')"
+        # outputs the character length of AVAILABLE_UPDATES in LENGTH_UPDATES
+        LENGTH_UPDATES="${#AVAILABLE_UPDATES}"
     fi
 
-    if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 8" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 27" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 28" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 29" ]; then
+    if [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "CentOS Linux 8" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Fedora 27" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Fedora 28" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Fedora 29" ]; then
 
-        # List with available updates to variable AvailableUpdates
-        AvailableUpdates="$(dnf check-update | grep -v plugins | awk '(NR >=1) {print $1;}' | grep '^[[:alpha:]]' | sed 's/\<Loading\>//g')"
-        # Outputs the character length of AvailableUpdates in LengthUpdates
-        LengthUpdates="${#AvailableUpdates}"
+        # list with available updates to variable AVAILABLE_UPDATES
+        AVAILABLE_UPDATES="$(dnf check-update | grep -v plugins | awk '(NR >=1) {print $1;}' | grep '^[[:alpha:]]' | sed 's/\<Loading\>//g')"
+        # outputs the character length of AVAILABLE_UPDATES in LENGTH_UPDATES
+        LENGTH_UPDATES="${#AVAILABLE_UPDATES}"
     fi
 
-    if [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 8" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 9" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 10" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 14.04" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 16.04" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.04" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.10" ]; then
-        # Update repository
+    if [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Debian GNU/Linux 8" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Debian GNU/Linux 9" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Debian GNU/Linux 10" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Ubuntu 14.04" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Ubuntu 16.04" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Ubuntu 18.04" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Ubuntu 18.10" ]; then
+        # update repository
         apt-get -qq update
-        # List with available updates to variable AvailableUpdates
-        AvailableUpdates="$(aptitude -F "%p" search '~U')"
-        # Outputs the character length of AvailableUpdates in LengthUpdates
-        LengthUpdates="${#AvailableUpdates}"
+        # list with available updates to variable AVAILABLE_UPDATES
+        AVAILABLE_UPDATES="$(aptitude -F "%p" search '~U')"
+        # outputs the character length of AVAILABLE_UPDATES in LENGTH_UPDATES
+        LENGTH_UPDATES="${#AVAILABLE_UPDATES}"
     fi
 }
 
@@ -284,8 +285,8 @@ function GatherUpdates {
 # UPDATE CONFIG
 #############################################################################
 
-if [ "$ArgumentConfiguration" == "1" ]; then
-    # Effectuate changes in telegrambot.conf to system
+if [ "$ARGUMENT_CONFIGURATION" == "1" ]; then
+    # effectuate changes in telegrambot.conf to system
     ManagementConfiguration
 fi
 
@@ -293,8 +294,8 @@ fi
 # UPGRADE TELEGRAMBOT
 #############################################################################
 
-if [ "$ArgumentUpgrade" == "1" ]; then
-    # Upgrade telegrambot to the newest version
+if [ "$ARGUMENT_UPGRADE" == "1" ]; then
+    # upgrade telegrambot to the newest version
     ManagementUpgrade
 fi
 
@@ -302,38 +303,38 @@ fi
 # FUNCTION METRICS
 #############################################################################
 
-# Method CLI
-if [ "$ArgumentMetrics" == "1" ] && [ "$ArgumentCli" == "1" ]; then
+# method CLI
+if [ "$ARGUMENT_METRICS" == "1" ] && [ "$ARGUMENT_CLI" == "1" ]; then
 
-    # Gather required server information and metrics
+    # gather required server information and metrics
     GatherServerInformation
     GatherMetrics
 
-    # Output server metrics to shell and exit
+    # output server metrics to shell and exit
     echo
-    echo "HOST:     ${Hostname}"
-    echo "UPTIME:   ${Uptime}"
-    echo "LOAD:     ${CompleteLoad}"
-    echo "MEMORY:   ${UsedMemory}M / ${TotalMemory}M (${CurrentMemoryPercentageRounded}%)"
-    echo "DISK:     ${CurrentDiskUsage} / ${TotalDiskSize} (${CurrentDiskPercentage}%)"
+    echo "HOST:     ${HOSTNAME}"
+    echo "UPTIME:   ${UPTIME}"
+    echo "LOAD:     ${COMPLETE_LOAD}"
+    echo "MEMORY:   ${USED_MEMORY}M / ${TOTAL_MEMORY}M (${CURRENT_MEMORY_PERCENTAGE_ROUNDED}%)"
+    echo "DISK:     ${CURRENT_DISK_USAGE} / ${TOTAL_DISK_SIZE} (${CURRENT_DISK_PERCENTAGE}%)"
     exit 0
 fi
 
-# Method Telegram
-if [ "$ArgumentMetrics" == "1" ] && [ "$ArgumentTelegram" == "1" ]; then
+# method Telegram
+if [ "$ARGUMENT_METRICS" == "1" ] && [ "$ARGUMENT_TELEGRAM" == "1" ]; then
 
-    # Gather required server information and metrics
+    # gather required server information and metrics
     GatherServerInformation
     GatherMetrics
 
-    # Create message for Telegram
-    MetricsMessage="$(echo -e "*Host*:        ${Hostname}\\n*Uptime*:  ${Uptime}\\n\\n*Load*:         ${CompleteLoad}\\n*Memory*:  ${UsedMemory} M / ${TotalMemory} M (${CurrentMemoryPercentageRounded}%)\\n*Disk*:          ${CurrentDiskUsage} / ${TotalDiskSize} (${CurrentDiskPercentage}%)")"
+    # create message for Telegram
+    METRICS_MESSAGE="$(echo -e "*Host*:        ${HOSTNAME}\\n*UPTIME*:  ${UPTIME}\\n\\n*Load*:         ${COMPLETE_LOAD}\\n*Memory*:  ${USED_MEMORY} M / ${TOTAL_MEMORY} M (${CURRENT_MEMORY_PERCENTAGE_ROUNDED}%)\\n*Disk*:          ${CURRENT_DISK_USAGE} / ${TOTAL_DISK_SIZE} (${CURRENT_DISK_PERCENTAGE}%)")"
 
-    # Create payload for curl
-    MetricsPayload="chat_id=${MetricsChat}&text=${MetricsMessage}&parse_mode=Markdown&disable_web_page_preview=true"
+    # create payload for curl
+    METRICS_PAYLOAD="chat_id=${METRICS_CHAT}&text=${METRICS_MESSAGE}&parse_mode=Markdown&disable_web_page_preview=true"
 
-    # Sent payload to Telegram and exit
-    curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "${MetricsPayload}" ${MetricsUrl} > /dev/null 2>&1 &
+    # sent payload to Telegram and exit
+    curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "${METRICS_PAYLOAD}" "${METRICS_URL}" > /dev/null 2>&1 &
     exit 0
 fi
 
@@ -341,81 +342,81 @@ fi
 # FUNCTION ALERT
 #############################################################################
 
-# Method CLI
-if [ "$ArgumentAlert" == "1" ] && [ "$ArgumentCli" == "1" ]; then
+# method CLI
+if [ "$ARGUMENT_ALERT" == "1" ] && [ "$ARGUMENT_CLI" == "1" ]; then
 
-    # Gather required server information and metrics
+    # gather required server information and metrics
     GatherServerInformation
     GatherMetrics
 
-    # Check whether the current server load exceeds the threshold and alert if true
+    # check whether the current server load exceeds the threshold and alert if true
     # and output server alert status to shell
     echo
-    if [ "$CurrentLoadPercentageRounded" -ge "$ThresholdLoadNumber" ]; then
-        echo -e "[!] SERVER LOAD:\\tA current server load of ${CurrentLoadPercentageRounded}% exceeds the threshold of ${ThresholdLoad}."
+    if [ "$CURRENT_LOAD_PERCENTAGE_ROUNDED" -ge "$THRESHOLD_LOAD_NUMBER" ]; then
+        echo -e "[!] SERVER LOAD:\\tA current server load of ${CURRENT_LOAD_PERCENTAGE_ROUNDED}% exceeds the threshold of ${THRESHOLD_LOAD}."
     else
-        echo -e "[i] SERVER LOAD:\\tA current server load of ${CurrentLoadPercentageRounded}% does not exceed the threshold of ${ThresholdLoad}."
+        echo -e "[i] SERVER LOAD:\\tA current server load of ${CURRENT_LOAD_PERCENTAGE_ROUNDED}% does not exceed the threshold of ${THRESHOLD_LOAD}."
     fi
 
-    if [ "$CurrentMemoryPercentageRounded" -ge "$ThresholdMemoryNumber" ]; then
-        echo -e "[!] SERVER MEMORY:\\tA current memory usage of ${CurrentMemoryPercentageRounded}% exceeds the threshold of ${ThresholdMemory}."
+    if [ "$CURRENT_MEMORY_PERCENTAGE_ROUNDED" -ge "$THRESHOLD_MEMORY_NUMBER" ]; then
+        echo -e "[!] SERVER MEMORY:\\tA current memory usage of ${CURRENT_MEMORY_PERCENTAGE_ROUNDED}% exceeds the threshold of ${THRESHOLD_MEMORY}."
     else
-        echo -e "[i] SERVER MEMORY:\\tA current memory usage of ${CurrentMemoryPercentageRounded}% does not exceed the threshold of ${ThresholdMemory}."
+        echo -e "[i] SERVER MEMORY:\\tA current memory usage of ${CURRENT_MEMORY_PERCENTAGE_ROUNDED}% does not exceed the threshold of ${THRESHOLD_MEMORY}."
     fi
 
-    if [ "$CurrentDiskPercentage" -ge "$ThresholdDiskNumber" ]; then
-        echo -e "[!] DISK USAGE:\\t\\tA current disk usage of ${CurrentDiskPercentage}% exceeds the threshold of ${ThresholdDisk}."
+    if [ "$CURRENT_DISK_PERCENTAGE" -ge "$THRESHOLD_DISK_NUMBER" ]; then
+        echo -e "[!] DISK USAGE:\\t\\tA current disk usage of ${CURRENT_DISK_PERCENTAGE}% exceeds the threshold of ${THRESHOLD_DISK}."
     else
-        echo -e "[i] DISK USAGE:\\t\\tA current disk usage of ${CurrentDiskPercentage}% does not exceed the threshold of ${ThresholdDisk}."
+        echo -e "[i] DISK USAGE:\\t\\tA current disk usage of ${CURRENT_DISK_PERCENTAGE}% does not exceed the threshold of ${THRESHOLD_DISK}."
     fi
-    # Exit when done
+    # exit when done
     exit 0
 fi
 
 # Method Telegram
-if [ "$ArgumentAlert" == "1" ] && [ "$ArgumentTelegram" == "1" ]; then
+if [ "$ARGUMENT_ALERT" == "1" ] && [ "$ARGUMENT_TELEGRAM" == "1" ]; then
 
-    # Gather required server information and metrics
+    # gather required server information and metrics
     GatherServerInformation
     GatherMetrics
 
-    # Check whether the current server load exceeds the threshold and alert if true
-    if [ "$CurrentLoadPercentageRounded" -ge "$ThresholdLoadNumber" ]; then
+    # check whether the current server load exceeds the threshold and alert if true
+    if [ "$CURRENT_LOAD_PERCENTAGE_ROUNDED" -ge "$THRESHOLD_LOAD_NUMBER" ]; then
 
-        # Create message for Telegram
-        AlertMessageLoad="\xE2\x9A\xA0 *ALERT: SERVER LOAD*\\n\\nThe server load (${CurrentLoadPercentageRounded}%) on *${Hostname}* exceeds the threshold of ${ThresholdLoad}\\n\\n*Load average:*\\n${CompleteLoad}"
+        # create message for Telegram
+        ALERT_MESSAGE_LOAD="\xE2\x9A\xA0 *ALERT: SERVER LOAD*\\n\\nThe server load (${CURRENT_LOAD_PERCENTAGE_ROUNDED}%) on *${HOSTNAME}* exceeds the threshold of ${THRESHOLD_LOAD}\\n\\n*Load average:*\\n${COMPLETE_LOAD}"
 
-        # Create payload for curl
-        AlertPayloadLoad="chat_id=${AlertChat}&text=$(echo -e "${AlertMessageLoad}")&parse_mode=Markdown&disable_web_page_preview=true"
+        # create payload for curl
+        ALERT_PAYLOAD_LOAD="chat_id=${ALERT_CHAT}&text=$(echo -e "${ALERT_MESSAGE_LOAD}")&parse_mode=Markdown&disable_web_page_preview=true"
 
-        # Sent payload to Telegram
-        curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "${AlertPayloadLoad}" ${AlertUrl} > /dev/null 2>&1 &
+        # sent payload to Telegram
+        curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "${ALERT_PAYLOAD_LOAD}" "${ALERT_URL}" > /dev/null 2>&1 &
     fi
 
-    # Check whether the current server memory usage exceeds the threshold and alert if true
-    if [ "$CurrentMemoryPercentageRounded" -ge "$ThresholdMemoryNumber" ]; then
+    # check whether the current server memory usage exceeds the threshold and alert if true
+    if [ "$CURRENT_MEMORY_PERCENTAGE_ROUNDED" -ge "$THRESHOLD_MEMORY_NUMBER" ]; then
 
-        # Create message for Telegram
-        AlertMessageMemory="\xE2\x9A\xA0 *ALERT: SERVER MEMORY*\\n\\nMemory usage (${CurrentMemoryPercentageRounded}%) on *${Hostname}* exceeds the threshold of ${ThresholdMemory}\\n\\n*Memory usage:*\\n$(free -m -h)"
+        # create message for Telegram
+        ALERT_MESSAGE_MEMORY="\xE2\x9A\xA0 *ALERT: SERVER MEMORY*\\n\\nMemory usage (${CURRENT_MEMORY_PERCENTAGE_ROUNDED}%) on *${HOSTNAME}* exceeds the threshold of ${THRESHOLD_MEMORY}\\n\\n*Memory usage:*\\n$(free -m -h)"
 
-        # Create payload for curl
-        AlertPayloadMemory="chat_id=${AlertChat}&text=$(echo -e "${AlertMessageMemory}")&parse_mode=Markdown&disable_web_page_preview=true"
+        # create payload for curl
+        ALERT_PAYLOAD_MEMORY="chat_id=${ALERT_CHAT}&text=$(echo -e "${ALERT_MESSAGE_MEMORY}")&parse_mode=Markdown&disable_web_page_preview=true"
 
-        # Sent payload to Telegram
-        curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "${AlertPayloadMemory}" ${AlertUrl} > /dev/null 2>&1 &
+        # sent payload to Telegram
+        curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "${ALERT_PAYLOAD_MEMORY}" "${ALERT_URL}" > /dev/null 2>&1 &
     fi
 
-    # Check whether the current disk usaged exceeds the threshold and alert if true
-    if [ "$CurrentDiskPercentage" -ge "$ThresholdDiskNumber" ]; then
+    # check whether the current disk usaged exceeds the threshold and alert if true
+    if [ "$CURRENT_DISK_PERCENTAGE" -ge "$THRESHOLD_DISK_NUMBER" ]; then
 
-        # Create message for Telegram
-        AlertMessageDisk="\xE2\x9A\xA0 *ALERT: FILE SYSTEM*\\n\\nDisk usage (${CurrentDiskPercentage}%) on *${Hostname}* exceeds the threshold of ${ThresholdDisk}\\n\\n*Filesystem info:*\\n$(df -h)"
+        # create message for Telegram
+        ALERT_MESSAGE_DISK="\xE2\x9A\xA0 *ALERT: FILE SYSTEM*\\n\\nDisk usage (${CURRENT_DISK_PERCENTAGE}%) on *${HOSTNAME}* exceeds the threshold of ${THRESHOLD_DISK}\\n\\n*Filesystem info:*\\n$(df -h)"
 
-        # Create payload for curl
-        AlertPayloadDisk="chat_id=${AlertChat}&text=$(echo -e "${AlertMessageDisk}")&parse_mode=Markdown&disable_web_page_preview=true"
+        # create payload for curl
+        ALERT_PAYLOAD_DISK="chat_id=${ALERT_CHAT}&text=$(echo -e "${ALERT_MESSAGE_DISK}")&parse_mode=Markdown&disable_web_page_preview=true"
 
-        # Sent payload to Telegram
-        curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "${AlertPayloadDisk}" ${AlertUrl} > /dev/null 2>&1 &
+        # sent payload to Telegram
+        curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "${ALERT_PAYLOAD_DISK}" "${ALERT_URL}" > /dev/null 2>&1 &
     fi
     exit 0
 fi
@@ -424,61 +425,61 @@ fi
 # FUNCTION UPDATES
 #############################################################################
 
-# Method CLI
-if [ "$ArgumentUpdates" == "1" ] && [ "$ArgumentCli" == "1" ]; then
+# method CLI
+if [ "$ARGUMENT_UPDATES" == "1" ] && [ "$ARGUMENT_CLI" == "1" ]; then
 
-    # Gather required information about updates
+    # gather required information about updates
     GatherUpdates
 
-    # Notify user when there are no updates
-    if [ -z "$AvailableUpdates" ]; then
+    # notify user when there are no updates
+    if [ -z "$AVAILABLE_UPDATES" ]; then
         echo
         echo "There are no updates available."
         echo
         exit 0
     fi
 
-    # Notify user when there are updates available
+    # notify user when there are updates available
     echo
     echo "The following updates are available:"
     echo
-    echo "${AvailableUpdates}"
+    echo "${AVAILABLE_UPDATES}"
     echo
     exit 0
 fi
 
-# Method Telegram
-if [ "$ArgumentUpdates" == "1" ] && [ "$ArgumentTelegram" == "1" ]; then
+# method Telegram
+if [ "$ARGUMENT_UPDATES" == "1" ] && [ "$ARGUMENT_TELEGRAM" == "1" ]; then
 
-    # Gather required information about updates and server
+    # gather required information about updates and server
     GatherServerInformation
     GatherUpdates
 
-        # Create updates payload to sent to telegram API
-        UpdatesPayload="chat_id=${UpdatesChat}&text=$(echo -e "${UpdatesMessage}")&parse_mode=Markdown&disable_web_page_preview=true"
+        # create updates payload to sent to telegram API
+        UPDATES_PAYLOAD="chat_id=${UPDATES_CHAT}&text=$(echo -e "${UPDATES_MESSAGE}")&parse_mode=Markdown&disable_web_page_preview=true"
 
-        # Sent updates payload to Telegram API
-        curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "${UpdatesPayload}" ${UpdatesUrl} > /dev/null 2>&1 &
+        # sent updates payload to Telegram API
+        curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "${UPDATES_PAYLOAD}" "${UPDATES_URL}" > /dev/null 2>&1 &
 
-    # Do nothing if there are no updates
-    if [ -z "$AvailableUpdates" ]; then
+    # do nothing if there are no updates
+    if [ -z "$AVAILABLE_UPDATES" ]; then
         exit 0
     else
-        # If update list length is less than 4000 characters, then sent update list
-        if [ "$LengthUpdates" -lt "4000" ]; then
-            UpdatesMessage="There are updates available on *${Hostname}*:\n\n${AvailableUpdates}"
+        # if update list length is less than 4000 characters, then sent update list
+        if [ "$LENGTH_UPDATES" -lt "4000" ]; then
+            UPDATES_MESSAGE="There are updates available on *${HOSTNAME}*:\n\n${AVAILABLE_UPDATES}"
         fi
 
-        # If update list length is greater than 4000 characters, don't sent update list
-        if [ "$LengthUpdates" -gt "4000" ]; then
-            UpdatesMessage="There are updates available on *${Hostname}*. Unfortunately, the list with updates is too large for Telegram. Please update your server as soon as possible."
+        # if update list length is greater than 4000 characters, don't sent update list
+        if [ "$LENGTH_UPDATES" -gt "4000" ]; then
+            UPDATES_MESSAGE="There are updates available on *${HOSTNAME}*. Unfortunately, the list with updates is too large for Telegram. Please update your server as soon as possible."
         fi
 
-        # Create updates payload to sent to telegram API
-        UpdatesPayload="chat_id=${UpdatesChat}&text=$(echo -e "${UpdatesMessage}")&parse_mode=Markdown&disable_web_page_preview=true"
+        # create updates payload to sent to telegram API
+        UPDATES_PAYLOAD="chat_id=${UPDATES_CHAT}&text=$(echo -e "${UPDATES_MESSAGE}")&parse_mode=Markdown&disable_web_page_preview=true"
 
-        # Sent updates payload to Telegram API
-        curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "${UpdatesPayload}" ${UpdatesUrl} > /dev/null 2>&1 &
+        # sent updates payload to Telegram API
+        curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "${UPDATES_PAYLOAD}" "${UPDATES_URL}" > /dev/null 2>&1 &
     fi
 exit 0
 fi
@@ -487,13 +488,13 @@ fi
 # FUNCTION LOGIN
 #############################################################################
 
-# Method CLI
-if [ "$ArgumentLogin" == "1" ] && [ "$ArgumentCli" == "1" ]; then
+# method CLI
+if [ "$ARGUMENT_LOGIN" == "1" ] && [ "$ARGUMENT_CLI" == "1" ]; then
     echo "Oops! This function has not been implemented yet!"
     exit 0
 fi
 
-if [ "$ArgumentLogin" == "1" ] && [ "$ArgumentTelegram" == "1" ]; then
+if [ "$ARGUMENT_LOGIN" == "1" ] && [ "$ARGUMENT_TELEGRAM" == "1" ]; then
     echo "Oops! This function has not been implemented yet!"
     exit 0
 fi
@@ -502,13 +503,13 @@ fi
 # FUNCTION OUTAGE
 #############################################################################
 
-# Method CLI
-if [ "$ArgumentOutage" == "1" ] && [ "$ArgumentCli" == "1" ]; then
+# method CLI
+if [ "$ARGUMENT_OUTAGE" == "1" ] && [ "$ARGUMENT_CLI" == "1" ]; then
     echo "Oops! This function has not been implemented yet!"
     exit 0
 fi
 
-if [ "$ArgumentOutage" == "1" ] && [ "$ArgumentTelegram" == "1" ]; then
+if [ "$ARGUMENT_OUTAGE" == "1" ] && [ "$ARGUMENT_TELEGRAM" == "1" ]; then
     echo "Oops! This function has not been implemented yet!"
     exit 0
 fi

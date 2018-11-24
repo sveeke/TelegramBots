@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.8.3-ALPHA (08-08-2018)
+# Version 0.8.4-ALPHA (24-11-2018)
 #############################################################################
 
 #############################################################################
@@ -26,32 +26,32 @@
 # for them to work.
 
 # General settings
-AutoUpgrade='no' # Default 'no'
+AUTO_UPGRADE='no' # Default 'no'
 
 # Metrics function
-MetricsActivate='yes' # Default 'yes'
-MetricsToken='token'
-MetricsChat='id'
+METRICS_ENABLED='yes' # Default 'yes'
+METRICS_TOKEN='token'
+METRICS_CHAT='id'
 
 # Alert function
-AlertActivate='yes' # Default 'yes'
-AlertToken='token'
-AlertChat='id'
+ALERT_ENABLED='yes' # Default 'yes'
+ALERT_TOKEN='token'
+ALERT_CHAT='id'
 
 # Updates function
-UpdatesActivate='yes' # Default 'yes'
-UpdatesToken='token'
-UpdatesChat='id'
+UPDATES_ENABLED='yes' # Default 'yes'
+UPDATES_TOKEN='token'
+UPDATES_CHAT='id'
 
 # Login function
-LoginActivate='no' # Default 'no'
-LoginToken='token'
-LoginChat='id'
+LOGIN_ENABLED='no' # Default 'no'
+LOGIN_TOKEN='token'
+LOGIN_CHAT='id'
 
 # Outage function
-OutageActivate='no' # Default 'no'
-OutageToken='token'
-OutageChat='id'
+OUTAGE_ENABLED='no' # Default 'no'
+OUTAGE_TOKEN='token'
+OUTAGE_CHAT='id'
 
 #############################################################################
 # INTRODUCTION
@@ -104,22 +104,22 @@ if [ -f /etc/os-release ]; then
     . /etc/os-release
 
     # Put distro name and version in variables
-    OperatingSystem="$NAME"
-    OperatingSystemVersion="$VERSION_ID"
+    OPERATING_SYSTEM="$NAME"
+    OPERATING_SYSTEM_VERSION="$VERSION_ID"
 
     # Check all supported combinations of OS and version
-    if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 7" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 8" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 27" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 28" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Fedora 29" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 8" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 9" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 10" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 14.04" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 16.04" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.04" ] || \
-    [ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.10" ]; then
+    if [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "CentOS Linux 7" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "CentOS Linux 8" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Fedora 27" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Fedora 28" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Fedora 29" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Debian GNU/Linux 8" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Debian GNU/Linux 9" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Debian GNU/Linux 10" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Ubuntu 14.04" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Ubuntu 16.04" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Ubuntu 18.04" ] || \
+    [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Ubuntu 18.10" ]; then
         echo -e "\\t\\t\\t\\t\\t\\t[YES]"
 
     else
@@ -164,28 +164,28 @@ fi
 echo
 echo "*** UPDATING OPERATING SYSTEM ***"
 # Update CentOS 7
-if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 7" ]; then
+if [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "CentOS Linux 7" ]; then
     echo "[+] Downloading packages from repositories and upgrade..."
     yum -y -q update
 fi
 
 # Update CentOS 8+ and Fedora
-if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 8" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Fedora 27" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Fedora 28" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Fedora 29" ]; then
+if [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "CentOS Linux 8" ] || \
+[ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Fedora 27" ] || \
+[ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Fedora 28" ] || \
+[ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Fedora 29" ]; then
     echo "[+] Downloading packages from repositories and upgrade..."
     dnf -y -q update
 fi
 
 # Update Debian and Ubuntu
-if [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 8" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 9" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 10" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 14.04" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 16.04" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.04" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.10" ]; then
+if [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Debian GNU/Linux 8" ] || \
+[ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Debian GNU/Linux 9" ] || \
+[ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Debian GNU/Linux 10" ] || \
+[ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Ubuntu 14.04" ] || \
+[ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Ubuntu 16.04" ] || \
+[ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Ubuntu 18.04" ] || \
+[ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Ubuntu 18.10" ]; then
     echo "[+] Downloading package list from repositories..."
     apt-get -qq update
 
@@ -210,26 +210,26 @@ echo "*** INSTALLING DEPENDENCIES ***"
 echo "[+] Installing dependencies..."
 
 # Install dependencies on CentOS 7
-if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 7" ]; then
+if [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "CentOS Linux 7" ]; then
     yum -y -q install wget bc
 fi
 
 # Install dependencies on CentOS 8+ and Fedora
-if [ "$OperatingSystem $OperatingSystemVersion" == "CentOS Linux 8" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Fedora 27" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Fedora 28" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Fedora 29" ]; then
+if [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "CentOS Linux 8" ] || \
+[ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Fedora 27" ] || \
+[ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Fedora 28" ] || \
+[ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Fedora 29" ]; then
     dnf -y -q install wget bc
 fi
 
 # Install dependencies on Debian and Ubuntu
-if [ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 8" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 9" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Debian GNU/Linux 10" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 14.04" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 16.04" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.04" ] || \
-[ "$OperatingSystem $OperatingSystemVersion" == "Ubuntu 18.10" ]; then
+if [ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Debian GNU/Linux 8" ] || \
+[ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Debian GNU/Linux 9" ] || \
+[ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Debian GNU/Linux 10" ] || \
+[ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Ubuntu 14.04" ] || \
+[ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Ubuntu 16.04" ] || \
+[ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Ubuntu 18.04" ] || \
+[ "$OPERATING_SYSTEM $OPERATING_SYSTEM_VERSION" == "Ubuntu 18.10" ]; then
     apt-get -y -qq install aptitude bc curl
 fi
 
@@ -245,37 +245,37 @@ if [ ! -f /etc/telegrambot/telegrambot.conf ]; then
     echo "[+] No existing configuration found, creating new one..."
 
     # Check whether the variables at the beginning of the script were used
-    if [ "$MetricsToken" != "token" ] && \
-    [ "$MetricsChat" != "id" ] && \
-    [ "$AlertToken" != "token" ] && \
-    [ "$AlertChat" != "id" ] && \
-    [ "$UpdatesToken" != "token" ] && \
-    [ "$UpdatesChat" != "id" ] && \
-    [ "$LoginToken" != "token" ] && \
-    [ "$LoginChat" != "id" ] && \
-    [ "$OutageToken" != "token" ] && \
-    [ "$OutageChat" != "id" ]; then
+    if [ "$METRICS_TOKEN" != "token" ] && \
+    [ "$METRICS_CHAT" != "id" ] && \
+    [ "$ALERT_TOKEN" != "token" ] && \
+    [ "$ALERT_CHAT" != "id" ] && \
+    [ "$UPDATES_TOKEN" != "token" ] && \
+    [ "$UPDATES_CHAT" != "id" ] && \
+    [ "$LOGIN_TOKEN" != "token" ] && \
+    [ "$LOGIN_CHAT" != "id" ] && \
+    [ "$OUTAGE_TOKEN" != "token" ] && \
+    [ "$OUTAGE_CHAT" != "id" ]; then
         echo "[+] Using provided access tokens..."
         echo "[+] Using provided chat IDs"
 
     else
         # Bot authentication token
-        read -r -p "[?] Enter bot token: " ProvidedToken
+        read -r -p "[?] Enter bot token: " PROVIDED_TOKEN
 
         # Telegram chat ID
-        read -r -p "[?] Enter chat ID:   " ProvidedChatID
+        read -r -p "[?] Enter chat ID:   " PROVIDED_CHAT_ID
 
         # Use provided token and chat ID in corresponding variables
-        MetricsToken="${ProvidedToken}"
-        MetricsChat="${ProvidedChatID}"
-        AlertToken="${ProvidedToken}"
-        AlertChat="${ProvidedChatID}"
-        UpdatesToken="${ProvidedToken}"
-        UpdatesChat="${ProvidedChatID}"
-        LoginToken="${ProvidedToken}"
-        LoginChat="${ProvidedChatID}"
-        OutageToken="${ProvidedToken}"
-        OutageChat="${ProvidedChatID}"
+        METRICS_TOKEN="${PROVIDED_TOKEN}"
+        METRICS_CHAT="${PROVIDED_CHAT_ID}"
+        ALERT_TOKEN="${PROVIDED_TOKEN}"
+        ALERT_CHAT="${PROVIDED_CHAT_ID}"
+        UPDATES_TOKEN="${PROVIDED_TOKEN}"
+        UPDATES_CHAT="${PROVIDED_CHAT_ID}"
+        LOGIN_TOKEN="${PROVIDED_TOKEN}"
+        LOGIN_CHAT="${PROVIDED_CHAT_ID}"
+        OUTAGE_TOKEN="${PROVIDED_TOKEN}"
+        OUTAGE_CHAT="${PROVIDED_CHAT_ID}"
     fi
 
     # Add telegrambot configuration file to /etc/telegrambot/
@@ -286,27 +286,27 @@ if [ ! -f /etc/telegrambot/telegrambot.conf ]; then
 
     # Add operating system information
     echo "[+] Adding system information..."
-    sed -i s%'operating_system_here'%"$OperatingSystem"%g /etc/telegrambot/telegrambot.conf
-    sed -i s%'operating_system_version_here'%"$OperatingSystemVersion"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'operating_system_here'%"${OPERATING_SYSTEM}"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'operating_system_version_here'%"${OPERATING_SYSTEM_VERSION}"%g /etc/telegrambot/telegrambot.conf
     
     # Add access tokens and chat IDs
     echo "[+] Adding access token and chat ID to bots..."
-    sed -i s%'auto_upgrade_here'%"$AutoUpgrade"%g /etc/telegrambot/telegrambot.conf
-    sed -i s%'metrics_activate_here'%"$MetricsActivate"%g /etc/telegrambot/telegrambot.conf
-    sed -i s%'metrics_token_here'%"$MetricsToken"%g /etc/telegrambot/telegrambot.conf
-    sed -i s%'metrics_id_here'%"$MetricsChat"%g /etc/telegrambot/telegrambot.conf
-    sed -i s%'alert_activate_here'%"$AlertActivate"%g /etc/telegrambot/telegrambot.conf
-    sed -i s%'alert_token_here'%"$AlertToken"%g /etc/telegrambot/telegrambot.conf
-    sed -i s%'alert_id_here'%"$AlertChat"%g /etc/telegrambot/telegrambot.conf
-    sed -i s%'updates_activate_here'%"$UpdatesActivate"%g /etc/telegrambot/telegrambot.conf
-    sed -i s%'updates_token_here'%"$UpdatesToken"%g /etc/telegrambot/telegrambot.conf
-    sed -i s%'updates_id_here'%"$UpdatesChat"%g /etc/telegrambot/telegrambot.conf
-    sed -i s%'login_activate_here'%"$LoginActivate"%g /etc/telegrambot/telegrambot.conf
-    sed -i s%'login_token_here'%"$LoginToken"%g /etc/telegrambot/telegrambot.conf
-    sed -i s%'login_id_here'%"$LoginChat"%g /etc/telegrambot/telegrambot.conf
-    sed -i s%'outage_activate_here'%"$OutageActivate"%g /etc/telegrambot/telegrambot.conf
-    sed -i s%'outage_token_here'%"$OutageToken"%g /etc/telegrambot/telegrambot.conf
-    sed -i s%'outage_id_here'%"$OutageChat"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'auto_upgrade_here'%"${AUTO_UPGRADE}"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'metrics_activate_here'%"${METRICS_ENABLED}"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'metrics_token_here'%"${METRICS_TOKEN}"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'metrics_id_here'%"${METRICS_CHAT}"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'alert_activate_here'%"${ALERT_ENABLED}"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'alert_token_here'%"${ALERT_TOKEN}"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'alert_id_here'%"${ALERT_CHAT}"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'updates_activate_here'%"${UPDATES_ENABLED}"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'updates_token_here'%"${UPDATES_TOKEN}"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'updates_id_here'%"${UPDATES_CHAT}"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'login_activate_here'%"${LOGIN_ENABLED}"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'login_token_here'%"${LOGIN_TOKEN}"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'login_id_here'%"${LOGIN_CHAT}"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'outage_activate_here'%"${OUTAGE_ENABLED}"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'outage_token_here'%"${OUTAGE_TOKEN}"%g /etc/telegrambot/telegrambot.conf
+    sed -i s%'outage_id_here'%"${OUTAGE_CHAT}"%g /etc/telegrambot/telegrambot.conf
 
 else
     # Notify user that all configuration steps will be skipped
