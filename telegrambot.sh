@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Version 0.1.4-ALPHA (24-11-2018)
+# Version 0.1.5-ALPHA (24-11-2018)
 #############################################################################
 
 #############################################################################
@@ -119,8 +119,8 @@ function management_configuration {
     echo
 
     # source telegrambot.conf
-    echo "[+] Reading telegrambot.conf..."
-    source /etc/telegrambot/telegrambot.conf
+    #echo "[+] Reading telegrambot.conf..."
+    #source /etc/telegrambot/telegrambot.conf
 
     # update cronjob for AutoUpgrade if activated
     if [ "$AUTO_UPGRADE" = 'yes' ]; then
@@ -282,6 +282,19 @@ function gather_updates {
 }
 
 #############################################################################
+# METHOD FUNCTIONS
+#############################################################################
+
+function method_telegram {
+
+    # create payload for Telegram
+    TELEGRAM_PAYLOAD="chat_id=${TELEGRAM_CHAT_ID}&text=${TELEGRAM_MESSAGE}&parse_mode=Markdown&disable_web_page_preview=true"
+
+    # sent payload to Telegram API and exit
+    curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "${TELEGRAM_PAYLOAD}" "${TELEGRAM_URL}" > /dev/null 2>&1 &
+}
+
+#############################################################################
 # UPDATE CONFIG
 #############################################################################
 
@@ -327,14 +340,15 @@ if [ "$ARGUMENT_METRICS" == "1" ] && [ "$ARGUMENT_TELEGRAM" == "1" ]; then
     gather_server_information
     gather_metrics
 
-    # create message for Telegram
-    METRICS_MESSAGE="$(echo -e "*Host*:        ${HOSTNAME}\\n*UPTIME*:  ${UPTIME}\\n\\n*Load*:         ${COMPLETE_LOAD}\\n*Memory*:  ${USED_MEMORY} M / ${TOTAL_MEMORY} M (${CURRENT_MEMORY_PERCENTAGE_ROUNDED}%)\\n*Disk*:          ${CURRENT_DISK_USAGE} / ${TOTAL_DISK_SIZE} (${CURRENT_DISK_PERCENTAGE}%)")"
+    # add values to method_telegram variables
+    TELEGRAM_CHAT_ID="${METRICS_CHAT}"
+    TELEGRAM_URL="${METRICS_URL}"
+    TELEGRAM_MESSAGE="$(echo -e "*Host*:        ${HOSTNAME}\\n*UPTIME*:  ${UPTIME}\\n\\n*Load*:         ${COMPLETE_LOAD}\\n*Memory*:  ${USED_MEMORY} M / ${TOTAL_MEMORY} M (${CURRENT_MEMORY_PERCENTAGE_ROUNDED}%)\\n*Disk*:          ${CURRENT_DISK_USAGE} / ${TOTAL_DISK_SIZE} (${CURRENT_DISK_PERCENTAGE}%)")"
 
-    # create payload for curl
-    METRICS_PAYLOAD="chat_id=${METRICS_CHAT}&text=${METRICS_MESSAGE}&parse_mode=Markdown&disable_web_page_preview=true"
+    # call method_telegram
+    method_telegram
 
-    # sent payload to Telegram and exit
-    curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "${METRICS_PAYLOAD}" "${METRICS_URL}" > /dev/null 2>&1 &
+    # exit when done
     exit 0
 fi
 
@@ -380,44 +394,40 @@ if [ "$ARGUMENT_ALERT" == "1" ] && [ "$ARGUMENT_TELEGRAM" == "1" ]; then
     gather_server_information
     gather_metrics
 
+    # add values to method_telegram variables
+    TELEGRAM_CHAT_ID="${ALERT_CHAT}"
+    TELEGRAM_URL="${ALERT_URL}"
+
     # check whether the current server load exceeds the threshold and alert if true
     if [ "$CURRENT_LOAD_PERCENTAGE_ROUNDED" -ge "$THRESHOLD_LOAD_NUMBER" ]; then
 
         # create message for Telegram
-        ALERT_MESSAGE_LOAD="\xE2\x9A\xA0 *ALERT: SERVER LOAD*\\n\\nThe server load (${CURRENT_LOAD_PERCENTAGE_ROUNDED}%) on *${HOSTNAME}* exceeds the threshold of ${THRESHOLD_LOAD}\\n\\n*Load average:*\\n${COMPLETE_LOAD}"
+        TELEGRAM_MESSAGE="\xE2\x9A\xA0 *ALERT: SERVER LOAD*\\n\\nThe server load (${CURRENT_LOAD_PERCENTAGE_ROUNDED}%) on *${HOSTNAME}* exceeds the threshold of ${THRESHOLD_LOAD}\\n\\n*Load average:*\\n${COMPLETE_LOAD}"
 
-        # create payload for curl
-        ALERT_PAYLOAD_LOAD="chat_id=${ALERT_CHAT}&text=$(echo -e "${ALERT_MESSAGE_LOAD}")&parse_mode=Markdown&disable_web_page_preview=true"
-
-        # sent payload to Telegram
-        curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "${ALERT_PAYLOAD_LOAD}" "${ALERT_URL}" > /dev/null 2>&1 &
+        # call method_telegram
+        method_telegram
     fi
 
     # check whether the current server memory usage exceeds the threshold and alert if true
     if [ "$CURRENT_MEMORY_PERCENTAGE_ROUNDED" -ge "$THRESHOLD_MEMORY_NUMBER" ]; then
 
         # create message for Telegram
-        ALERT_MESSAGE_MEMORY="\xE2\x9A\xA0 *ALERT: SERVER MEMORY*\\n\\nMemory usage (${CURRENT_MEMORY_PERCENTAGE_ROUNDED}%) on *${HOSTNAME}* exceeds the threshold of ${THRESHOLD_MEMORY}\\n\\n*Memory usage:*\\n$(free -m -h)"
+        TELEGRAM_MESSAGE="\xE2\x9A\xA0 *ALERT: SERVER MEMORY*\\n\\nMemory usage (${CURRENT_MEMORY_PERCENTAGE_ROUNDED}%) on *${HOSTNAME}* exceeds the threshold of ${THRESHOLD_MEMORY}\\n\\n*Memory usage:*\\n$(free -m -h)"
 
-        # create payload for curl
-        ALERT_PAYLOAD_MEMORY="chat_id=${ALERT_CHAT}&text=$(echo -e "${ALERT_MESSAGE_MEMORY}")&parse_mode=Markdown&disable_web_page_preview=true"
-
-        # sent payload to Telegram
-        curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "${ALERT_PAYLOAD_MEMORY}" "${ALERT_URL}" > /dev/null 2>&1 &
+        # call method_telegram
+        method_telegram
     fi
 
     # check whether the current disk usaged exceeds the threshold and alert if true
     if [ "$CURRENT_DISK_PERCENTAGE" -ge "$THRESHOLD_DISK_NUMBER" ]; then
 
         # create message for Telegram
-        ALERT_MESSAGE_DISK="\xE2\x9A\xA0 *ALERT: FILE SYSTEM*\\n\\nDisk usage (${CURRENT_DISK_PERCENTAGE}%) on *${HOSTNAME}* exceeds the threshold of ${THRESHOLD_DISK}\\n\\n*Filesystem info:*\\n$(df -h)"
+        TELEGRAM_MESSAGE="\xE2\x9A\xA0 *ALERT: FILE SYSTEM*\\n\\nDisk usage (${CURRENT_DISK_PERCENTAGE}%) on *${HOSTNAME}* exceeds the threshold of ${THRESHOLD_DISK}\\n\\n*Filesystem info:*\\n$(df -h)"
 
-        # create payload for curl
-        ALERT_PAYLOAD_DISK="chat_id=${ALERT_CHAT}&text=$(echo -e "${ALERT_MESSAGE_DISK}")&parse_mode=Markdown&disable_web_page_preview=true"
-
-        # sent payload to Telegram
-        curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "${ALERT_PAYLOAD_DISK}" "${ALERT_URL}" > /dev/null 2>&1 &
+        # call method_telegram
+        method_telegram
     fi
+    # exit when done
     exit 0
 fi
 
