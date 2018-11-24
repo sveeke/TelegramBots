@@ -205,7 +205,7 @@ function gather_metrics {
     COMPLETE_LOAD="$(< /proc/loadavg awk '{print $1" "$2" "$3}')"
     CURRENT_LOAD="$(< /proc/loadavg awk '{print $3}')"
     CURRENT_LOAD_PERCENTAGE="$(echo "(${CURRENT_LOAD}/${MAX_LOAD_SERVER})*100" | bc -l)"
-    CURRENT_LOAD_PERCENTAGE_ROUNDED="$(printf "%.0f\n" $(echo ${CURRENT_LOAD_PERCENTAGE} | tr -d '%'))"
+    CURRENT_LOAD_PERCENTAGE_ROUNDED="$(printf "%.0f\n" $(echo "${CURRENT_LOAD_PERCENTAGE}" | tr -d '%'))"
 
     # memory metrics
     # use older format in free when Debian 8 or Ubuntu 14.04 is used
@@ -217,7 +217,7 @@ function gather_metrics {
         CACHED_MEMORY="$(free -m | awk '/^Mem/ {print $7}')"
         USED_MEMORY="$(echo "(${TOTAL_MEMORY}-${FREE_MEMORY}-${BUFFERS_MEMORY}-${CACHED_MEMORY})" | bc -l)"
         CURRENT_MEMORY_PERCENTAGE="$(echo "(${USED_MEMORY}/${TOTAL_MEMORY})*100" | bc -l)"
-        CURRENT_MEMORY_PERCENTAGE_ROUNDED="$(printf "%.0f\n" $(echo ${CURRENT_MEMORY_PERCENTAGE} | tr -d '%'))"
+        CURRENT_MEMORY_PERCENTAGE_ROUNDED="$(printf "%.0f\n" $(echo "${CURRENT_MEMORY_PERCENTAGE}" | tr -d '%'))"
     fi
 
     # use newer format in free when CentOS 7+, Debian 9+ or Ubuntu 16.04+ is used
@@ -234,9 +234,9 @@ function gather_metrics {
         TOTAL_MEMORY="$(free -m | awk '/^Mem/ {print $2}')"
         FREE_MEMORY="$(free -m | awk '/^Mem/ {print $4}')"
         BUFFERS_CACHED_MEMORY="$(free -m | awk '/^Mem/ {print $6}')"
-        USED_MEMORY="$(echo "("$TOTAL_MEMORY"-"$FREE_MEMORY"-"$BUFFERS_CACHED_MEMORY")" | bc -l)"
-        CURRENT_MEMORY_PERCENTAGE="$(echo "("$USED_MEMORY"/"$TOTAL_MEMORY")*100" | bc -l)"
-        CURRENT_MEMORY_PERCENTAGE_ROUNDED="$(printf "%.0f\n" $(echo "$CURRENT_MEMORY_PERCENTAGE" | tr -d '%'))"
+        USED_MEMORY="$(echo "(${TOTAL_MEMORY}-${FREE_MEMORY}-${BUFFERS_CACHED_MEMORY})" | bc -l)"
+        CURRENT_MEMORY_PERCENTAGE="$(echo "(${USED_MEMORY}/${TOTAL_MEMORY})*100" | bc -l)"
+        CURRENT_MEMORY_PERCENTAGE_ROUNDED="$(printf "%.0f\n" $(echo "${CURRENT_MEMORY_PERCENTAGE}" | tr -d '%'))"
     fi
 
     # file system metrics
@@ -287,7 +287,7 @@ function gather_updates {
 
 if [ "$ARGUMENT_CONFIGURATION" == "1" ]; then
     # effectuate changes in telegrambot.conf to system
-    ManagementConfiguration
+    management_configuration
 fi
 
 #############################################################################
@@ -296,7 +296,7 @@ fi
 
 if [ "$ARGUMENT_UPGRADE" == "1" ]; then
     # upgrade telegrambot to the newest version
-    ManagementUpgrade
+    management_upgrade
 fi
 
 #############################################################################
@@ -307,8 +307,8 @@ fi
 if [ "$ARGUMENT_METRICS" == "1" ] && [ "$ARGUMENT_CLI" == "1" ]; then
 
     # gather required server information and metrics
-    GatherServerInformation
-    GatherMetrics
+    gather_server_information
+    gather_metrics
 
     # output server metrics to shell and exit
     echo
@@ -324,8 +324,8 @@ fi
 if [ "$ARGUMENT_METRICS" == "1" ] && [ "$ARGUMENT_TELEGRAM" == "1" ]; then
 
     # gather required server information and metrics
-    GatherServerInformation
-    GatherMetrics
+    gather_server_information
+    gather_metrics
 
     # create message for Telegram
     METRICS_MESSAGE="$(echo -e "*Host*:        ${HOSTNAME}\\n*UPTIME*:  ${UPTIME}\\n\\n*Load*:         ${COMPLETE_LOAD}\\n*Memory*:  ${USED_MEMORY} M / ${TOTAL_MEMORY} M (${CURRENT_MEMORY_PERCENTAGE_ROUNDED}%)\\n*Disk*:          ${CURRENT_DISK_USAGE} / ${TOTAL_DISK_SIZE} (${CURRENT_DISK_PERCENTAGE}%)")"
@@ -346,8 +346,8 @@ fi
 if [ "$ARGUMENT_ALERT" == "1" ] && [ "$ARGUMENT_CLI" == "1" ]; then
 
     # gather required server information and metrics
-    GatherServerInformation
-    GatherMetrics
+    gather_server_information
+    gather_metrics
 
     # check whether the current server load exceeds the threshold and alert if true
     # and output server alert status to shell
@@ -377,8 +377,8 @@ fi
 if [ "$ARGUMENT_ALERT" == "1" ] && [ "$ARGUMENT_TELEGRAM" == "1" ]; then
 
     # gather required server information and metrics
-    GatherServerInformation
-    GatherMetrics
+    gather_server_information
+    gather_metrics
 
     # check whether the current server load exceeds the threshold and alert if true
     if [ "$CURRENT_LOAD_PERCENTAGE_ROUNDED" -ge "$THRESHOLD_LOAD_NUMBER" ]; then
@@ -429,7 +429,7 @@ fi
 if [ "$ARGUMENT_UPDATES" == "1" ] && [ "$ARGUMENT_CLI" == "1" ]; then
 
     # gather required information about updates
-    GatherUpdates
+    gather_updates
 
     # notify user when there are no updates
     if [ -z "$AVAILABLE_UPDATES" ]; then
@@ -452,14 +452,14 @@ fi
 if [ "$ARGUMENT_UPDATES" == "1" ] && [ "$ARGUMENT_TELEGRAM" == "1" ]; then
 
     # gather required information about updates and server
-    GatherServerInformation
-    GatherUpdates
+    gather_server_information
+    gather_updates
 
-        # create updates payload to sent to telegram API
-        UPDATES_PAYLOAD="chat_id=${UPDATES_CHAT}&text=$(echo -e "${UPDATES_MESSAGE}")&parse_mode=Markdown&disable_web_page_preview=true"
+    # create updates payload to sent to telegram API
+    UPDATES_PAYLOAD="chat_id=${UPDATES_CHAT}&text=$(echo -e "${UPDATES_MESSAGE}")&parse_mode=Markdown&disable_web_page_preview=true"
 
-        # sent updates payload to Telegram API
-        curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "${UPDATES_PAYLOAD}" "${UPDATES_URL}" > /dev/null 2>&1 &
+    # sent updates payload to Telegram API
+    curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "${UPDATES_PAYLOAD}" "${UPDATES_URL}" > /dev/null 2>&1 &
 
     # do nothing if there are no updates
     if [ -z "$AVAILABLE_UPDATES" ]; then
@@ -481,7 +481,7 @@ if [ "$ARGUMENT_UPDATES" == "1" ] && [ "$ARGUMENT_TELEGRAM" == "1" ]; then
         # sent updates payload to Telegram API
         curl -s --max-time 10 --retry 5 --retry-delay 2 --retry-max-time 10 -d "${UPDATES_PAYLOAD}" "${UPDATES_URL}" > /dev/null 2>&1 &
     fi
-exit 0
+    exit 0
 fi
 
 #############################################################################
