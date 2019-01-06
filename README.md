@@ -1,3 +1,5 @@
+Note: this project has moved to https://github.com/onnozel/serverbot. The version in this repository isn't maintained anymore.
+
 # TelegramBots
 Telegrambot is a multi-function script that work really well together with Telegram bots. As of now, telegrambot is under heavy development and therefore instable. It shouldn't be used for any production system.
 
